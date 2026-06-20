@@ -1,0 +1,397 @@
+﻿@page "/persondetail/{Id:int}"
+@using Schuldenbuch.Core.DTOs.PersonDtos;
+@using Schuldenbuch.Core.DTOs.DebtDtos;
+@using Schuldenbuch.Core.Interfaces;
+@inject IPersonService PersonService
+@inject DebtService DebtService
+@inject NavigationManager NavigationManager
+
+
+<div class="dashboard-layout">
+
+    <div class="dashboard-header-zone">
+        <div class="dashboard-header">
+            <h1 class="fw-bold m-0">Detailansicht</h1>
+            <AppLogo />
+
+        </div>
+
+        <div class="button-bar gap-2">
+            <button class="btn btn-primary btn-sm" @onclick="GoBack">← Zurück</button>
+            <button type="button" class="btn btn-primary btn-sm" @onclick="addDebt">Schuld hinzufügen</button>
+
+            
+
+        </div>
+    </div>
+
+    @if (DetailPerson?.Person == null)
+    {
+        <div class="alert alert-warning mt-4">
+            Person nicht gefunden.
+        </div>
+    }
+    else
+    {
+
+        @if (DetailPerson?.Person != null)
+        {
+            <div class="address-block p-3 mb-3" style="background: rgba(30, 41, 59, 0.45); border-radius: 8px; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1);">
+                <div class="fw-bold">@DetailPerson.Person.Name</div>
+                <div class="fw-bold">@DetailPerson.Person.Street</div>
+                <div>@DetailPerson.Person.ZipCode @DetailPerson.Person.City</div>
+                <div class="mt-2 text-info fw-bold">Gesamtschulden: @DetailPerson.Person.Debts.Sum(d => d.Amount).ToString("C")</div>
+            </div>
+        }
+        else
+        {
+            <div class="text-white">Lade Personendaten...</div>
+        }
+
+        <div class="table-scroll">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Betrag</th>
+                        <th>Grund</th>
+                        <th>Datum</th>
+                        <th class="text-center">Aktion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var debt in DetailPerson.Person.Debts)
+                    {
+                        <tr>
+                            <td>@debt.Id</td>
+                            <td class="text-danger fw-bold">@debt.Amount.ToString("C")<button class="btn btn-danger btn-sm" @onclick="() => OpenUpdateModalDialog(debt, true)">Hinzufügen </button></td>
+                            <td class="text-danger fw-bold">@debt.Amount.ToString("C")<button class="btn btn-danger btn-sm" @onclick="() => OpenUpdateModalDialog(debt, false)">Abziehen </button></td>
+
+                            <td>@debt.Reason</td>
+                            <td>@debt.Date.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="text-center">
+                                <button class="btn btn-primary btn-sm" @onclick="() => OpenDeleteDebtDialog(debt)">Löschen</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            }
+        </div>
+    }
+
+    <!--Delete Person Modal-->
+    @if (isDeletePersonModalOpen)
+    {
+        <div class="blazor-modal-bg">
+            <div class="modal fade show" style="display: block;" tabindex="-1">
+                <div class="modal-dialog blazor-modal-content">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold text-danger">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Person löschen
+                            </h5>
+                            <button type="button" class="btn-close" @onclick="CloseDeletePersonModal"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <p>Bist du sicher, dass du diese Person und alle dazugehörigen Schuldeinträge unwiderruflich löschen möchtest?</p>
+
+                            <div class="p-3 rounded mb-2" style="background-color: rgba(0, 0, 0, 0.2); border-left: 4px solid #ef4444;">
+                                <div class="">Name:</div>
+                                <div class="fw-bold text-light">@DetailPerson.Person.Name</div>
+                                <div class="">Gesamtschulden</div>
+                                <div class="fw-bold text-danger">@DetailPerson.Person.Amount.ToString("C")</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer button-bar">
+                            <button type="button" class="btn btn-primary btn.sm" @onclick="CloseDeletePersonModal">
+                                Abbrechen
+                            </button>
+                            <button type="button" class="btn btn-danger px-4" @onclick="ConfirmDeletePerson">
+                                <i class=" me-2"></i>Endgültig löschen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <!--Delete Debt Modal-->
+    @if (isDeleteDebtModalOpen)
+    {
+        <div class="blazor-modal-bg">
+            <div class="modal fade show" style="display: block;" tabindex="-1">
+                <div class="modal-dialog blazor-modal-content">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold text-danger">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Eintrag löschen
+                            </h5>
+                            <button type="button" class="btn-close" @onclick="CloseDeleteDebtModal"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <p>Bist du sicher, dass du diesen Schuldeintrag unwiderruflich löschen möchtest?</p>
+
+                            <div class="p-3 rounded mb-2" style="background-color: rgba(0, 0, 0, 0.2); border-left: 4px solid #ef4444;">
+                                <div class="">Verwendungszweck:</div>
+                                <div class="fw-bold text-light mb-2">@debtReasonToDelete</div>
+                                <div class="">Betrag:</div>
+                                <div class="fw-bold text-danger">@debtAmountToDelete.ToString("C")</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer button-bar">
+                            <button type="button" class="btn btn-primary btn.sm" @onclick="CloseDeleteDebtModal">
+                                Abbrechen
+                            </button>
+                            <button type="button" class="btn btn-danger px-4" @onclick="ConfirmDeleteDebt">
+                                <i class="me-2"></i>Endgültig löschen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<!-- neue debt modal -->
+@if (isAddModalOpen)
+{
+    <div class="modal fade show d-block blazor-modal-bg" tabindex="-1">
+        <div class="modal-dialog blazor-modal-content">
+            <div class="modal-content shadow-lg p-4">
+                <h3 class="fw-bold mb-3">Schuld aktualisieren</h3>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+
+                <EditForm Model="UpdateDebtResultDto" OnValidSubmit="HandleAddDebt">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Betrag (€)</label>
+                        <input type="number" step="0.01" class="form-control" @bind-value="newDebtDto.Amount" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Verwendungszweck</label>
+                        <input type="text" class="form-control" @bind-value="newDebtDto.Description" required />
+                    </div>
+
+                    <div class="d-flex justify-content-end button-bar gap-2">
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="CloseAddModal">Abbrechen</button>
+                        <button type="submit" class="btn btn-success">Speichern</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+
+<!--Update Debt Modal-->
+@if (isUpdateModalOpen)
+{
+    <div class="modal fade show d-block blazor-modal-bg" tabindex="-1">
+        <div class="modal-dialog blazor-modal-content">
+            <div class="modal-content shadow-lg p-4">
+                <h3 class="fw-bold mb-3">Neue Schuld erfassen</h3>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+
+                <EditForm Model="UpdateDto" OnValidSubmit="HandleUpdateDebt">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Betrag (€)</label>
+                        <InputNumber step="0.01" class="form-control" @bind-value="UpdateDto.Amount" required />
+                    </div>
+
+                      
+
+                    <div class="d-flex justify-content-end button-bar gap-2">
+                        <button type="button" class="btn btn-primary btn-sm" @onclick="CloseAddModal">Abbrechen</button>
+                        <button type="submit" class="btn btn-success">Speichern</button>
+
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+    
+
+
+
+
+@code {
+    private bool isDeletePersonModalOpen = false;
+
+    private void OpenDeletePersonDialog()
+    {
+        isDeletePersonModalOpen = true;
+    }
+
+    private void CloseDeletePersonModal()
+    {
+        isDeletePersonModalOpen = false;
+    }
+
+    private async Task ConfirmDeletePerson()
+    {
+        // Nutzt deine originale Methode zum Löschen
+        await PersonService.DeletePersonAsync(Id);
+
+        CloseDeletePersonModal();
+
+        // Schickt den User zurück zur Übersicht
+        NavigationManager.NavigateTo("/");
+    }
+
+    // === NEU: Variablen für das Schulden-Lösch-Modal ===
+    private bool isDeleteDebtModalOpen = false;
+    private int debtIdToDelete;
+    private string debtReasonToDelete = "";
+    private decimal debtAmountToDelete;
+
+    private void OpenDeleteDebtDialog(dynamic debt)
+    {
+        debtIdToDelete = debt.Id;
+        debtReasonToDelete = debt.Reason;
+        debtAmountToDelete = debt.Amount;
+        isDeleteDebtModalOpen = true;
+    }
+
+    private void CloseDeleteDebtModal()
+    {
+        isDeleteDebtModalOpen = false;
+    }
+
+    private async Task ConfirmDeleteDebt()
+    {
+        // Nutzt deine bestehende Lösch-Logik
+        await DebtService.DeleteDebtAsync(debtIdToDelete);
+
+        // Aktualisiert die Daten exakt so, wie du es bei HandleAddDebt machst
+        DetailPerson = await PersonService.GetPersonAsync(Id);
+
+        CloseDeleteDebtModal();
+    }
+
+
+    // === DEINE BESTEHENDEN METHODEN & VARIABLEN ===
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private bool isAddModalOpen = false;
+    private AddDebtDto newDebtDto = new AddDebtDto();
+    private UpdateDebtResultDto UpdateDebtResultDto = new UpdateDebtResultDto();
+    private string errorMessage = "";
+
+    private void OpenAddModal()
+    {
+        newDebtDto = new AddDebtDto()
+        {
+            PersonId = Id
+        };
+        errorMessage = "";
+        isAddModalOpen = true;
+    }
+
+    private void CloseAddModal()
+    {
+        isAddModalOpen = false;
+    }
+
+    private async Task HandleAddDebt()
+    {
+        var result = await DebtService.AddDebtAsync(newDebtDto);
+
+        if (result.Status == DebtStatus.Success)
+        {
+            isAddModalOpen = false;
+        }
+        else
+        {
+            errorMessage = result.Message;
+        }
+
+        DetailPerson = await PersonService.GetPersonAsync(Id);
+    }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetPersonResultDto DetailPerson = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DetailPerson = await PersonService.GetPersonAsync(Id);
+    }
+
+    private async Task PersonDelete()
+    {
+        await PersonService.DeletePersonAsync(Id);
+        NavigationManager.NavigateTo("/");
+    }
+
+    // Altes direktes Löschen (kann als Backup drin bleiben)
+    private void DeleteDebt(int id)
+    {
+        DebtService.DeleteDebtAsync(id);
+        DetailPerson = PersonService.GetPersonAsync(Id).Result;
+    }
+
+    private void addDebt()
+    {
+        OpenAddModal();
+    }
+
+
+    //Update-Modal und Parameter für die zu aktualisierende Schuld
+
+    private bool isUpdateModalOpen = false;
+    private int debtIdToUpdate;
+    private UpdateDebtResultDto UpdateDto = new UpdateDebtResultDto();
+    private bool Addition;
+
+    private void OpenUpdateDebtDialog()
+    {
+        isDeletePersonModalOpen = true;
+    }
+
+    private void CloseUpdateDebtModal()
+    {
+        isUpdateModalOpen = false;
+    }
+
+    private void OpenUpdateModalDialog(Schuldenbuch.Core.DTOs.DebtDtos.DebtListItemDto selectedDebt, bool isAddition)
+    {
+        debtIdToUpdate = selectedDebt.Id;
+
+        UpdateDto.Amount = selectedDebt.Amount;
+
+        Addition = isAddition;
+
+        isUpdateModalOpen = true;
+    }
+
+    private async Task HandleUpdateDebt()
+    {
+        var result = await DebtService.UpdateDebtAsync(debtIdToUpdate, UpdateDto.Amount, Addition);
+
+        if (result.Status == UpdateStatus.Success)
+        {
+            isUpdateModalOpen = false;
+            DetailPerson = await PersonService.GetPersonAsync(Id);
+        }
+        else
+        {
+            errorMessage = result.Message;
+        }
+
+    }
+}

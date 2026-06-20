@@ -1,0 +1,7 @@
+﻿<Router AppAssembly="@typeof(Program).Assembly" NotFoundPage="@typeof(Pages.NotFound)"
+    AdditionalAssemblies="new[] { typeof(Schuldenbuch.Components.Dashboard).Assembly }">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" @rendermode="InteractiveServer"/>
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+</Router>

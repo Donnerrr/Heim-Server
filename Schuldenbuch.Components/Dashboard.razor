@@ -1,0 +1,143 @@
+﻿@namespace Schuldenbuch.Components
+
+@page "/"
+
+@inject IPersonService PersonService
+@inject NavigationManager NavMenu
+
+@using Schuldenbuch.Core.DTOs.PersonDtos
+@using Schuldenbuch.Core.Interfaces
+
+
+<PageTitle>Schuldenbuch V1.0</PageTitle>
+
+
+<div class="dashboard-layout">
+
+    <div class="dashboard-header-zone">
+        <div class="dashboard-header">
+            <h1 class="fw-bold m-0">Schuldenbuch <span class="badge bg-primary fs-6">v1.0</span></h1>
+            <AppLogo/>
+        </div>
+
+        <div class="button-bar">
+            <button class="btn btn-primary shadow-sm" @onclick="ShowModal">
+                Neue Person anlegen
+            </button>
+        </div>
+    </div>
+
+    <div class="table-scroll">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Name</th>
+                    <th>Straße</th>
+                    <th style="width: 120px;">PLZ</th>
+                    <th>Stadt</th>
+                    <th style="width: 120px;" class="text-center">Aktion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var person in PersonList)
+                {
+                    <tr>
+                        <td>@person.Id</td>
+                        <td class="fw-bold text-white">@person.Name</td>
+                        <td>@person.Street</td>
+                        <td>@person.ZipCode</td>
+                        <td>@person.City</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-primary btn-sm px-3 shadow-sm" @onclick="() => HandleClick(person.Id)">
+                                Anzeigen
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (isModalVisible)
+    {
+        <div class="modal fade show d-block blazor-modal-bg" tabindex="-1">
+            <div class="modal-dialog blazor-modal-content">
+                <div class="modal-content shadow-lg">
+                    <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="alert alert-danger mx-3 mt-3" />
+
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold">Neue Person erfassen</h5>
+                            <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Name</label>
+                                <InputText class="form-control" @bind-Value="model.Name" required/>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Straße</label>
+                                <InputText class="form-control" @bind-Value="model.Street" required />
+                            </div>
+                            <div class="row">
+                                <div class="col-4 mb-3">
+                                    <label class="form-label fw-semibold">PLZ</label>
+                                    <InputText class="form-control" @bind-Value="model.ZipCode" required/>
+                                </div>
+                                <div class="col-8 mb-3">
+                                    <label class="form-label fw-semibold">Stadt</label>
+                                    <InputText class="form-control" @bind-Value="model.City" required/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer bg-light bottom-bar">
+                            <button type="button" class="btn btn-primary btn-sm" @onclick="CloseModal">Abbrechen</button>
+                            <button type="submit" class="btn btn-success btn-sl">Speichern</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>            
+    }
+
+</div>
+
+@code {
+    private AddPersonDto model = new AddPersonDto();
+    private List<PersonListItemDto> PersonList = new List<PersonListItemDto>();
+    private bool isModalVisible = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        PersonList = await PersonService.GetAllPersonsAsync();
+
+    }
+    private void ShowModal()
+    {
+        model = new AddPersonDto(); // Macht die Schachtel frisch leer
+        isModalVisible = true;        // Knipst das Pop-up an
+    }
+
+    private void CloseModal() => isModalVisible = false;
+
+    private void HandleClick(int Id)
+    {
+        NavMenu.NavigateTo($"/persondetail/{Id}");
+    }
+
+
+    private async Task HandleValidSubmit()
+    {
+        // 2. Du übergibst die Schachtel an dein injectetes Werkzeug
+        await PersonService.AddPersonAsync(model);
+         PersonList = await PersonService.GetAllPersonsAsync(); // Aktualisiert die Liste, damit die neue Person direkt sichtbar ist
+
+        CloseModal();
+    }
+}
