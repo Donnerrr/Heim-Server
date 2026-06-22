@@ -1,0 +1,46 @@
+/* Karten Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.person-card {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.person-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 180, 216, 0.2);
+    border-color: var(--accent);
+}
+
+.debt-card {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(0, 180, 216, 0.25);
+    border-radius: 12px;
+    padding: 1.4rem;
+    transition: all 0.3s;
+}
+
+.debt-card:hover {
+    border-color: #f59e0b;
+}
+
+.debt-card h4 {
+    color: #f59e0b;
+    margin-bottom: 0.8rem;
+}
+
+.card-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
