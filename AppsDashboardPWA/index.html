@@ -6,114 +6,37 @@
     <meta name="theme-color" content="#0a2540">
     <title>Pottanker - Schuldenbuch</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
     <header>
-        <div class="logo">POTTANKER ⚓ Schuldenbuch</div>
-        <nav>
-            <button onclick="showTab(0)" class="active" id="tab0">Dashboard</button>
-            <button onclick="showTab(1)" id="tab1">Personen</button>
-        </nav>
+        <div class="logo">⚓ POTTANKER · DIGITALE WERFT</div>
+        <h1>Schuldenbuch</h1>
+        <p class="subtitle">DEBT TRACKER</p>
+        <p class="status-text">Moin! Hier laufen deine Schulden zusammen.</p>
     </header>
 
-    <main>
-        <!-- Dashboard -->
-        <div id="tab-content-0" class="tab-content">
-            <div class="welcome">
-                <span class="anchor-icon">⚓</span>
-                <h1>Willkommen bei Pottanker</h1>
-                <p>Moin und Herzlich Willkommen! Schön dass du auf meiner digitalen Werft gelandet bist.</p>
-            </div>
-            
-            <div class="card">
-                <div class="section-header">
-                    <h2>Statistik</h2>
-                </div>
-                <div class="stats-grid">
-                    <div>
-                        <h3 id="total-persons">0</h3>
-                        <p>Personen</p>
-                    </div>
-                    <div>
-                        <h3 id="total-debts">0</h3>
-                        <p>Offene Schulden</p>
-                    </div>
-                    <div>
-                        <h3 id="total-amount" style="color: #f59e0b;">0,00 €</h3>
-                        <p>Gesamtbetrag</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Personen Tab (Karten) -->
-        <div id="tab-content-1" class="tab-content" style="display: none;">
-            <div class="section-header">
+    <main class="container">
+        
+        <section id="persons-view">
+            <div class="view-header">
                 <h2>Personen</h2>
-                <button class="btn" onclick="showAddPersonModal()">+ Neue Person</button>
+                <button id="btn-add-person" class="btn-primary">+ Person hinzufügen</button>
             </div>
             <div id="persons-grid" class="grid"></div>
-        </div>
-    </main>
+        </section>
 
-    <!-- Add Person Modal -->
-    <div id="person-modal" class="modal">
-        <div class="modal-content">
-            <h2>Neue Person hinzufügen</h2>
-            <div class="form-grid">
-                <div><label>Vorname</label><input type="text" id="first-name" placeholder="Max"></div>
-                <div><label>Nachname</label><input type="text" id="last-name" placeholder="Mustermann"></div>
-                <div><label>Email</label><input type="email" id="email" placeholder="max@example.com"></div>
-                <div><label>Telefon</label><input type="tel" id="phone" placeholder="+49 123 456789"></div>
+        <section id="details-view" class="hidden">
+            <div class="view-header">
+                <button id="btn-back" class="btn-secondary">← Zurück</button>
+                <h2 id="selected-person-name">Schulden von ...</h2>
+                <button id="btn-add-debt" class="btn-primary">+ Schuld hinzufügen</button>
             </div>
-            <div class="modal-actions">
-                <button onclick="closeModals()" class="btn-secondary">Abbrechen</button>
-                <button onclick="addPerson()" class="btn">Speichern</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Person Detail Modal (mit Schulden-Karten) -->
-    <div id="person-detail-modal" class="modal">
-        <div class="modal-content" style="max-width: 900px; width: 95%;">
-            <h2 id="detail-person-name" style="margin-bottom: 1rem;">Person</h2>
-            
-            <div class="section-header">
-                <h3>Schulden</h3>
-                <button class="btn" onclick="showAddDebtModal()">+ Neue Schuld</button>
-            </div>
-            
             <div id="debts-grid" class="grid"></div>
-            
-            <div class="modal-actions" style="margin-top: 2rem;">
-                <button onclick="closeModals()" class="btn-secondary">Schließen</button>
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Add Debt Modal -->
-    <div id="debt-modal" class="modal">
-        <div class="modal-content">
-            <h2>Neue Schuld hinzufügen</h2>
-            <div class="form-grid">
-                <div>
-                    <label>Betrag (€)</label>
-                    <input type="number" step="0.01" id="debt-amount" placeholder="125.50">
-                </div>
-                <div style="grid-column: 1 / -1;">
-                    <label>Beschreibung</label>
-                    <input type="text" id="debt-description" placeholder="Miete Februar 2026">
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button onclick="closeModals()" class="btn-secondary">Abbrechen</button>
-                <button onclick="addDebt()" class="btn">Schuld hinzufügen</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="toast" class="toast"></div>
+    </main>
 
     <script src="app.js"></script>
 </body>
