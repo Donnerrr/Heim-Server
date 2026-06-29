@@ -3,41 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a2540">
-    <title>Pottanker - Schuldenbuch</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="styles.css">
+    <title>Schuldenbuch</title>
+    <link rel="stylesheet" href="style.css">
+    
+    
 </head>
 <body>
+    <h1>Schuldenbuch</h1>
+    <img class="logo" src="bilder/applogo.png" alt="Logo">
 
-    <header>
-        <div class="logo">⚓ POTTANKER · DIGITALE WERFT</div>
-        <h1>Schuldenbuch</h1>
-        <p class="subtitle">DEBT TRACKER</p>
-        <p class="status-text">Moin! Hier laufen deine Schulden zusammen.</p>
-    </header>
+    <article class="subtitle">
+        <h2>Alle Personen die Schulden haben. Klicke auf eine Person um ihre Schulden anzuzeigen.</h2>       
+    </article>
 
-    <main class="container">
-        
-        <section id="persons-view">
-            <div class="view-header">
-                <h2>Personen</h2>
-                <button id="btn-add-person" class="btn-primary">+ Person hinzufügen</button>
-            </div>
-            <div id="persons-grid" class="grid"></div>
-        </section>
-
-        <section id="details-view" class="hidden">
-            <div class="view-header">
-                <button id="btn-back" class="btn-secondary">← Zurück</button>
-                <h2 id="selected-person-name">Schulden von ...</h2>
-                <button id="btn-add-debt" class="btn-primary">+ Schuld hinzufügen</button>
-            </div>
-            <div id="debts-grid" class="grid"></div>
-        </section>
-
-    </main>
-
-    <script src="app.js"></script>
+    <section class="app-container">
+        <div class="app" onclick="window.location.href='apps/Schuldenbuch/Schuldenbuch.html'">
+            <img src="bilder/schuldenbuch.png" alt="Schuldenbuch">
+            <h3>Schuldenbuch</h3>
+        </div>
+    </section>
 </body>
 </html>
