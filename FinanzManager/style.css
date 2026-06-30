@@ -122,6 +122,7 @@ h1 {
     border-radius: 20px;          /* Etwas weichere, modernere Ecken */
     padding: 35px 24px;
     cursor: pointer;
+    user-select: none;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s, border-color 0.2s;
     display: flex;
     flex-direction: column;

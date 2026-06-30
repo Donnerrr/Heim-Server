@@ -96,7 +96,7 @@ function loadFinancesFromDB() {
     const container = document.getElementById("Finanzen-Container");
     
     container.innerHTML = `
-        <div class="app-card-dynamic">
+        <div class="app">
             <h3>Fitnessstudio</h3>
             <div class="amount">29,90 €</div>
             <div class="details">Monatlich (1. des Monats)</div>
