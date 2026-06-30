@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schuldenbuch</title>
+    <title>Finanz Manager</title>
     <link rel="stylesheet" href="style.css">
     
     
 </head>
 <body>
-    <h1>Finanzen</h1>
+    <h1>Finanz Manager</h1>
 
     <article class="subtitle">
-        <h2>Wähle zwischen Schulden oder eigenen Finanzen.</h2>       
+        <h2>Wähle zwischen Schuldeneinträgen oder eigenen Finanzen.</h2>       
     </article>
 
     <section class="app-container grid">
-        <div class="app" onclick="window.location.href='apps/Schuldenbuch/Schuldenbuch.html'">
+        <div class="app" onclick="openDebts()">
             <h3>Schuldenbuch</h3><img src="/bilder/applogo.png" alt="Link zu der Schuldner Seite">
             
         </div>
@@ -31,7 +31,7 @@
     </section>
 
 
-    <section id="SchuldenSection" class="app-container grid" hidden>
+    <section id="SchuldenSection" class="app-container grid hidden">
         <div class="view-header" onclick="window.location.href='apps/Schuldenbuch/Schuldenbuch.html'">
             <img src="bilder/applogo.png" alt="Logo mit Link zur Startseite">
             <h3>Schuldenbuch</h3>
@@ -44,8 +44,8 @@
     </section>
 
 
-    <section id="FinanzSection" class="app-container grid" hidden>
-        <div class="view-header" onclick="window.location.href='apps/Schuldenbuch/Finanzen.html'">
+    <section id="FinanzSection" class="app-container grid hidden">
+        <div class="view-header" onclick="openFinances()">
             <img src="bilder/finances.png" alt="Logo mit Link zu den Finanzen">
             <h3>Finanzen</h3>
             <button class="btn-primary" id="add-finance-btn" type="submit">Schuld hinzufügen</button>
