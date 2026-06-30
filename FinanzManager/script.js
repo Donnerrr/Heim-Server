@@ -1,214 +1,105 @@
-const API_BASE = '/api/Schuldenbuch';
+/* ==========================================================================
+   1. NAVIGATION (ANSICHTEN UMSCHALTEN)
+   ========================================================================== */
 
-// Variablen für DOM-Elemente
-let personsView, detailsView, personsGrid, debtsGrid, selectedPersonName, btnBack;
-let modalPerson, modalDebt, inputPersonName, inputDebtAmount;
-let currentPersonId = null;
-
-// Erst starten, wenn das gesamte HTML geladen wurde!
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Schuldenbuch-Frontend geladen. Initialisiere Elemente...");
-
-    // Elemente zuweisen
-    personsView = document.getElementById('persons-view');
-    detailsView = document.getElementById('details-view');
-    personsGrid = document.getElementById('persons-grid');
-    debtsGrid = document.getElementById('debts-grid');
-    selectedPersonName = document.getElementById('selected-person-name');
-    btnBack = document.getElementById('btn-back');
-    modalPerson = document.getElementById('modal-person');
-    modalDebt = document.getElementById('modal-debt');
-    inputPersonName = document.getElementById('input-person-name');
-    inputDebtAmount = document.getElementById('input-debt-amount');
-
-    // --- EVENT LISTENER REGISTRIEREN ---
-
-    // Zurück-Button
-    if (btnBack) {
-        btnBack.addEventListener('click', () => {
-            detailsView.classList.add('hidden');
-            personsView.classList.remove('hidden');
-            loadPersons();
-        });
-    }
-
-    // Modal öffnen: Person hinzufügen
-    const btnAddPerson = document.getElementById('btn-add-person');
-    if (btnAddPerson) {
-        btnAddPerson.addEventListener('click', () => {
-            console.log("Klick auf: + Person hinzufügen");
-            if (inputPersonName) inputPersonName.value = '';
-             modalPerson.classList.remove('hidden');
-        });
-    } else {
-        console.error("Button 'btn-add-person' wurde im HTML nicht gefunden!");
-    }
-
-    // Modal schließen: Person hinzufügen
-    const btnClosePersonModal = document.getElementById('btn-close-person-modal');
-    if (btnClosePersonModal) {
-        btnClosePersonModal.addEventListener('click', () => {
-            if (modalPerson) modalPerson.classList.add('hidden');
-        });
-    }
-
-    // Person speichern (POST)
-    const btnSavePerson = document.getElementById('btn-save-person');
-    if (btnSavePerson) {
-        btnSavePerson.addEventListener('click', savePersonData);
-    }
-
-    // Modal öffnen: Schuld hinzufügen
-    const btnAddDebt = document.getElementById('btn-add-debt');
-    if (btnAddDebt) {
-        btnAddDebt.addEventListener('click', () => {
-            console.log("Klick auf: + Schuld hinzufügen");
-            if (inputDebtAmount) inputDebtAmount.value = '';
-            if (modalDebt) modalDebt.classList.remove('hidden');
-        });
-    }
-
-    // Modal schließen: Schuld hinzufügen
-    const btnCloseDebtModal = document.getElementById('btn-close-debt-modal');
-    if (btnCloseDebtModal) {
-        btnCloseDebtModal.addEventListener('click', () => {
-            if (modalDebt) modalDebt.classList.add('hidden');
-        });
-    }
-
-    // Schuld speichern (POST)
-    const btnSaveDebt = document.getElementById('btn-save-debt');
-    if (btnSaveDebt) {
-        btnSaveDebt.addEventListener('click', saveDebtData);
-    }
-
-    // Direkt beim Start Personen aus dem Backend laden
-    loadPersons();
-});
-
-// --- API-LOGIK (POST & GET) ---
-
-async function loadPersons() {
-    try {
-        const response = await fetch(`${API_BASE}/Schuldenbuch/Person`);
-        if (!response.ok) throw new Error('Fehler beim Laden');
-        const persons = await response.json();
-        renderPersons(persons);
-    } catch (error) {
-        if (personsGrid) {
-            personsGrid.innerHTML = `<p class="status-text" style="color: #ef4444;">API nicht erreichbar. Nutze '+ Person hinzufügen' zum Testen.</p>`;
-        }
-    }
-}
-
-function renderPersons(persons) {
-    if (!personsGrid) return;
-    personsGrid.innerHTML = '';
-    if(persons.length === 0) {
-        personsGrid.innerHTML = '<p class="status-text">Keine Personen vorhanden.</p>';
-        return;
-    }
-    persons.forEach(person => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <div class="card-info"><h3>${person.name}</h3></div>
-            <div class="amount">${(person.totalDebt || 0).toFixed(2)} €</div>
-        `;
-        card.addEventListener('click', () => openPersonDetails(person));
-        personsGrid.appendChild(card);
-    });
-}
-
-async function savePersonData() {
-    const name = inputPersonName.value.trim();
-    if (!name) return alert('Bitte einen Namen eingeben.');
-
-    const dto = { name: name }; 
-
-    try {
-        const response = await fetch(`${API_BASE}/Schuldenbuch/Person`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dto)
-        });
-
-        if (response.ok) {
-            modalPerson.classList.add('hidden');
-            loadPersons();
-        } else {
-            alert('Fehler beim Speichern im Backend.');
-        }
-    } catch (error) {
-        console.error(error);
-        // Fallback für Offline-Testen in Visual Studio:
-        modalPerson.classList.add('hidden');
-        alert(`Offline-Modus: Person "${name}" lokal gespeichert (Backend nicht erreichbar).`);
-    }
-}
-
-async function openPersonDetails(person) {
-    currentPersonId = person.id;
-    if (selectedPersonName) selectedPersonName.textContent = `Schulden von ${person.name}`;
-    if (personsView) personsView.classList.add('hidden');
-    if (detailsView) detailsView.classList.remove('hidden');
+// Hilfsfunktion: Blendet alle Sektionen aus
+function hideAllSections() {
+    document.getElementById("SchuldenSection").classList.add("hidden");
+    document.getElementById("SchuldenDetailSection").classList.add("hidden");
+    document.getElementById("FinanzSection").classList.add("hidden");
     
-    try {
-        const response = await fetch(`${API_BASE}/Schuldenbuch/Person/${person.id}`);
-        const personData = await response.json();
-        renderDebts(personData.debts || []);
-    } catch (error) {
-        if (debtsGrid) debtsGrid.innerHTML = '<p class="status-text">Posten konnten nicht geladen werden.</p>';
-    }
+    // Falls das Hauptmenü (Ebene 1) in einem eigenen Container liegt, hier auch steuern:
+    // Im aktuellen HTML liegt Ebene 1 direkt im body. Um sie auszublenden, packen wir sie optional in eine Section.
+    // Für den Moment steuern wir die Sichtbarkeit der Dashboard-Kacheln direkt über den app-container.
+    const mainDashboard = document.querySelector("body > .app-container:not([id])");
+    const mainSubtitle = document.querySelector(".subtitle");
+    
+    if (mainDashboard) mainDashboard.classList.add("hidden");
+    if (mainSubtitle) mainSubtitle.classList.add("hidden");
 }
 
-function renderDebts(debts) {
-    if (!debtsGrid) return;
-    debtsGrid.innerHTML = '';
-    if(debts.length === 0) {
-        debtsGrid.innerHTML = '<p class="status-text">Keine offenen Posten. 🎉</p>';
-        return;
-    }
-    debts.forEach(debt => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <div class="card-info">
-                <h3>Schuld-Posten</h3>
-                <div class="date">${debt.createdDate ? new Date(debt.createdDate).toLocaleDateString() : ''}</div>
-            </div>
-            <div class="amount">${debt.amount.toFixed(2)} €</div>
-        `;
-        debtsGrid.appendChild(card);
-    });
+// Ebene 1: Zurück zum Dashboard
+function openDashboard() {
+    hideAllSections();
+    
+    // Dashboard-Elemente wieder einblenden
+    const mainDashboard = document.querySelector("body > .app-container:not([id])");
+    const mainSubtitle = document.querySelector(".subtitle");
+    
+    if (mainDashboard) mainDashboard.classList.remove("hidden");
+    if (mainSubtitle) mainSubtitle.classList.remove("hidden");
 }
 
-async function saveDebtData() {
-    const amount = parseFloat(inputDebtAmount.value);
-    if (isNaN(amount) || amount <= 0) return alert('Bitte einen gültigen Betrag eingeben.');
+// Ebene 2a: Schulden-Personenübersicht öffnen
+function openDebts() {
+    hideAllSections();
+    document.getElementById("SchuldenSection").classList.remove("hidden");
+    
+    // Hier triggern wir direkt das Laden der Personen aus der DB
+    loadPersonsFromDB();
+}
 
-    const dto = {
-        personId: currentPersonId,
-        amount: amount
-    };
+// Ebene 2b: Eigene Finanzen / Raten öffnen
+function openFinances() {
+    hideAllSections();
+    document.getElementById("FinanzSection").classList.remove("hidden");
+    
+    // Hier triggern wir das Laden der Verträge/Raten aus der DB
+    loadFinancesFromDB();
+}
 
-    try {
-        const response = await fetch(`${API_BASE}/Schuldenbuch/Debt`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dto)
-        });
 
-        if (response.ok) {
-            modalDebt.classList.add('hidden');
-            const res = await fetch(`${API_BASE}/Schuldenbuch/Person/${currentPersonId}`);
-            const personData = await res.json();
-            renderDebts(personData.debts || []);
-        } else {
-            alert('Fehler beim Eintragen der Schuld.');
-        }
-    } catch (error) {
-        console.error(error);
-        modalDebt.classList.add('hidden');
-    }
+/* ==========================================================================
+   2. DYNAMISCHES LADEN & DB-SCHNITTSTELLEN (PLATZHALTER)
+   Genau nach deiner Logik-Skizze aufgebaut!
+   ========================================================================== */
+
+// Läuft beim Klick auf "Schuldenbuch"
+function loadPersonsFromDB() {
+    console.log("DB-Aufruf: Lade alle Personen...");
+    const container = document.getElementById("Schulden-Container");
+    
+    // Platzhalter für das spätere Fetching
+    container.innerHTML = `
+        <div class="app-card-dynamic" onclick="loadPersonDetails(1)">
+            <h3>Max Mustermann</h3>
+            <div class="amount">45,00 €</div>
+            <div class="details">Zuletzt geändert: Gestern</div>
+        </div>
+    `;
+}
+
+// Ebene 3: Läuft beim Klick auf eine Personenkachel
+function loadPersonDetails(personId) {
+    hideAllSections();
+    document.getElementById("SchuldenDetailSection").classList.remove("hidden");
+    
+    // Namen der Person dynamisch setzen
+    document.getElementById("CurrentPersonName").innerText = `Schulden von Person #${personId}`;
+    
+    console.log(`DB-Aufruf: Lade spezifische Schulden für Person-ID: ${personId}...`);
+    const container = document.getElementById("Personen-Schulden-Container");
+    
+    // Platzhalter für die konkreten Schuldposten dieser Person
+    container.innerHTML = `
+        <div class="app-card-dynamic">
+            <h3>Kasten Bier</h3>
+            <div class="amount">15,50 €</div>
+            <div class="details">Ausgeliehen am: 12.06.2026</div>
+        </div>
+    `;
+}
+
+// Läuft beim Klick auf "Finanzen"
+function loadFinancesFromDB() {
+    console.log("DB-Aufruf: Lade eigene Finanzen & Raten...");
+    const container = document.getElementById("Finanzen-Container");
+    
+    container.innerHTML = `
+        <div class="app-card-dynamic">
+            <h3>Fitnessstudio</h3>
+            <div class="amount">29,90 €</div>
+            <div class="details">Monatlich (1. des Monats)</div>
+        </div>
+    `;
 }

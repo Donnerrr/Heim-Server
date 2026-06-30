@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finanz Manager</title>
     <link rel="stylesheet" href="style.css">
-    
-    
 </head>
 <body>
+
     <h1>Finanz Manager</h1>
+    <img class="logo" src="bilder/applogo.png" alt="Logo der App">
 
     <article class="subtitle">
         <h2>Wähle zwischen Schuldeneinträgen oder eigenen Finanzen.</h2>       
@@ -17,23 +17,20 @@
 
     <section class="app-container grid">
         <div class="app" onclick="openDebts()">
-            <h3>Schuldenbuch</h3><img src="/bilder/applogo.png" alt="Link zu der Schuldner Seite">
-            
+            <h3>Schuldenbuch</h3>
+            <img class="logo" src="bilder/Schulden-Logo.png" alt="Link zu der Schuldner Seite">
         </div>
 
         <div class="app" onclick="openFinances()">
             <h3>Finanzen</h3>
-            <img src="bilder/finances.png" alt="Link zu der Finanzen Seite">
-            
+            <img class="logo" src="bilder/DauerRate-Logo.png"alt="Link zu der Finanzen Seite">
         </div>
-
-
     </section>
 
 
     <section id="SchuldenSection" class="app-container grid hidden">
         <div class="view-header">
-            <img src="bilder/applogo.png" alt="Logo mit Link zur Startseite">
+            <img src="bilder/applogo.png" onclick="openDashboard()" alt="Logo mit Link zur Startseite">
             <h3>Schuldenbuch</h3>
             <button class="btn-primary" id="add-person-btn" type="submit">Person hinzufügen</button>
         </div>
@@ -44,9 +41,22 @@
     </section>
 
 
+    <section id="SchuldenDetailSection" class="app-container grid hidden">
+        <div class="view-header">
+            <button class="btn-back" onclick="openDebts()">&larr; Zurück</button>
+            <h3 id="CurrentPersonName">Schulden von ...</h3>
+            <img src="bilder/applogo.png" onclick="openDashboard()" alt="Direkt zum Dashboard">
+        </div>
+
+        <div class="app" id="Personen-Schulden-Container">
+
+        </div>
+    </section>
+
+
     <section id="FinanzSection" class="app-container grid hidden">
         <div class="view-header">
-            <img src="bilder/finances.png" alt="Logo mit Link zu den Finanzen">
+            <img src="bilder/applogo.png" onclick="openDashboard()" alt="Logo mit Link zu den Finanzen">
             <h3>Finanzen</h3>
             <button class="btn-primary" id="add-finance-btn" type="submit">Schuld hinzufügen</button>
         </div>
@@ -55,6 +65,44 @@
             
         </div>
     </section>
+
+    <div id="AddPersonModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Neue Person hinzufügen</h3>
+            <form id="add-person-form" onsubmit="savePerson(event)">
+                <div class="form-group">
+                    <label for="person-name">Name der Person:</label>
+                    <input type="text" id="person-name" required placeholder="z.B. Max Mustermann">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeModal('AddPersonModal')">Abbrechen</button>
+                    <button type="submit" class="btn-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="AddEntryModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="EntryModalTitle">Neuen Eintrag hinzufügen</h3>
+            <form id="add-entry-form" onsubmit="saveEntry(event)">
+                <div class="form-group">
+                    <label for="entry-purpose">Verwendungszweck:</label>
+                    <input type="text" id="entry-purpose" required placeholder="z.B. Kasten Bier, Monatsbeitrag">
+                </div>
+                <div class="form-group">
+                    <label for="entry-amount">Betrag in €:</label>
+                    <input type="number" id="entry-amount" step="0.01" required placeholder="0,00">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeModal('AddEntryModal')">Abbrechen</button>
+                    <button type="submit" class="btn-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script src="script.js"></script>
 
 </body>
 </html>

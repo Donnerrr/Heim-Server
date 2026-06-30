@@ -1,12 +1,18 @@
-/* Farbpalette & Basis-Setup */
+/* ==========================================================================
+   1. FARBPALETTE & BASIS-SETUP
+   ========================================================================== */
 :root {
-    --bg-color: #0d1b2a;
-    --card-bg: #1b263b;
-    --border-color: #415a77;
-    --text-color: #e0e1dd;
-    --accent-gold: #e0a96d;
-    --accent-gold-hover: #cca43b;
-    --text-muted: #8d99ae;
+    --bg-color: #0b131a;         /* Sehr dunkles, edles Blau-Grau */
+    --card-bg: #11222c;          /* Dunkles Teal/Grünblau für die Kacheln */
+    --border-color: #1a3a4b;     /* Subtiler bläulicher Rahmen */
+    --text-color: #e0e1dd;       /* Helles Elfenbeinweiß */
+    --accent-gold: #cca43b;      /* Glänzendes Gold aus den Rahmen */
+    --accent-gold-hover: #e0a96d;/* Helleres Gold für Hover-Effekte */
+    --text-muted: #8d99ae;       /* Gedämpftes Grau für Untertitel */
+}
+
+.hidden {
+    display: none !important;
 }
 
 * {
@@ -19,202 +25,131 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    padding: 20px;
+    padding: 40px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
 }
 
-/* Header */
-header {
-    text-align: center;
-    margin-bottom: 40px;
-    width: 100%;
-    max-width: 800px;
-}
-
+/* Das Hauptlogo oben sauber über dem Titel zentrieren */
 .logo {
-    width: 80px;
-    height: 120px;
-    margin-bottom: 10px;
-    position: absolute;
-    top: -15px;
-    left: 58%;
-    
+    width: 140px;
+    height: auto;
+    margin-bottom: 25px;
+    /* Absolute Positionierung komplett entfernt! */
 }
-
+/* ==========================================================================
+   2. HEADER & TYPOGRAFIE
+   ========================================================================== */
 h1 {
     font-size: 2.5rem;
     color: var(--accent-gold);
     font-weight: 300;
-}
-
-.subtitle {
-    font-size: 0.9rem;
-    letter-spacing: 4px;
-    color: var(--text-muted);
+    text-align: center;
+    margin-top: 20px;
     margin-bottom: 10px;
 }
 
-.status-text {
-    font-size: 0.95rem;
-    color: #4caf50; /* Grüner Punkt Vibe */
-}
-
-/* Container & Grids */
-.container {
+.subtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
     width: 100%;
-    max-width: 800px;
+    max-width: 600px;
 }
 
+.subtitle h2 {
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+/* Header-Leiste innerhalb der einzelnen Ansichten (Ebene 2 & 3) */
 .view-header {
+    grid-column: 1 / -1; /* Streckt die Bar über das gesamte Grid */
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 15px;
+    width: 100%;
+}
+
+.view-header h3 {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+/* Logos/Navigations-Bilder im Header */
+.view-header img {
+    height: 45px;
+    width: auto;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.view-header img:hover {
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   3. CONTAINER & GRIDS
+   ========================================================================== */
+.app-container {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 40px;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    /* Erstellt quadratische Kacheln, die sich responsiv anordnen */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
 }
 
-/* Kacheln (Cards) */
-.card {
+/* ==========================================================================
+   4. KACHELN (CARDS / .APP)
+   ========================================================================== */
+.app {
     background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 20px;          /* Etwas weichere, modernere Ecken */
+    padding: 35px 24px;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s, border-color 0.2s;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: center;          
+    justify-content: center;      /* Inhalt rückt harmonisch ins Zentrum */
+    gap: 20px;                    /* Fester, sauberer Abstand zwischen Text und Bild */
+    text-align: center;
+    min-height: 280px;            /* Etwas mehr Raum zum Atmen */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+/* Eleganter Hover-Effekt: Kachel hebt sich und glüht leicht gold */
+.app:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(204, 164, 59, 0.15);
     border-color: var(--accent-gold);
 }
 
-.card h3 {
+.app h3 {
     color: var(--text-color);
-    margin-bottom: 10px;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
 }
 
-.card .amount {
-    font-size: 1.5rem;
-    color: var(--accent-gold);
-    font-weight: bold;
-    text-align: right;
-}
-
-.card .details {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: 5px;
-}
-
-/* Buttons */
-.btn-primary {
-    background-color: var(--accent-gold);
-    color: #121212;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-primary:hover {
-    background-color: var(--accent-gold-hover);
-}
-
-.btn-secondary {
-    background: transparent;
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Hilfsklassen */
-.hidden {
-    display: none !important;
-}
-
-/* --- MODAL (POPUP) STYLING --- */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(3, 7, 12, 0.8); /* Hintergrund abdunkeln */
-    backdrop-filter: blur(4px); /* Subtiler Weichzeichner */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-blue);
-    border-radius: 12px;
-    padding: 24px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
-
-.modal-content h3 {
-    color: var(--text-gold);
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 24px;
-}
-
-.form-group label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.form-group input {
-    background-color: var(--bg-dark);
-    border: 1px solid var(--border-blue);
-    border-radius: 6px;
-    padding: 12px;
-    color: var(--text-white);
-    font-size: 1rem;
-    outline: none;
-}
-
-.form-group input:focus {
-    border-color: var(--text-gold);
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+/* Die runden App-Logos in den Kacheln optimal zur Geltung bringen */
+.app img {
+    max-width: 120px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); /* Gibt den runden Logos Tiefe */
 }
