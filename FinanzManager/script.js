@@ -61,7 +61,7 @@ function loadPersonsFromDB() {
     
     // Platzhalter für das spätere Fetching
     container.innerHTML = `
-        <div class="app-card-dynamic" onclick="loadPersonDetails(1)">
+        <div class="app" onclick="loadPersonDetails(1)">
             <h3>Max Mustermann</h3>
             <div class="amount">45,00 €</div>
             <div class="details">Zuletzt geändert: Gestern</div>
@@ -82,7 +82,7 @@ function loadPersonDetails(personId) {
     
     // Platzhalter für die konkreten Schuldposten dieser Person
     container.innerHTML = `
-        <div class="app-card-dynamic">
+        <div class="app">
             <h3>Kasten Bier</h3>
             <div class="amount">15,50 €</div>
             <div class="details">Ausgeliehen am: 12.06.2026</div>
