@@ -34,9 +34,9 @@ body {
 
 /* Das Hauptlogo oben sauber über dem Titel zentrieren */
 .logo {
-    width: 140px;
+    width: 90px;
     height: auto;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     /* Absolute Positionierung komplett entfernt! */
 }
 /* ==========================================================================

@@ -18,12 +18,12 @@
     <section class="app-container grid">
         <div class="app" onclick="openDebts()">
             <h3>Schuldenbuch</h3>
-            <img class="logo" src="bilder/Schulden-Logo.png" alt="Link zu der Schuldner Seite">
+            <img  src="bilder/Schulden-Logo.png" alt="Link zu der Schuldner Seite">
         </div>
 
         <div class="app" onclick="openFinances()">
             <h3>Finanzen</h3>
-            <img class="logo" src="bilder/DauerRate-Logo.png"alt="Link zu der Finanzen Seite">
+            <img  src="bilder/DauerRate-Logo.png"alt="Link zu der Finanzen Seite">
         </div>
     </section>
 
@@ -32,7 +32,7 @@
         <div class="view-header">
             <img src="bilder/applogo.png" onclick="openDashboard()" alt="Logo mit Link zur Startseite">
             <h3>Schuldenbuch</h3>
-            <button class="btn-primary" id="add-person-btn" type="submit">Person hinzufügen</button>
+            <button class="btn-primary" id="add-person-btn" type="button" onclick="openPersonModal()">Person hinzufügen</button>
         </div>
 
         <div class="app" id="Schulden-Container">
