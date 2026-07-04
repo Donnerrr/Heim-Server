@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Schuldenbuch.Core.DTOs;
+using System.Globalization;
 using Schuldenbuch.Core.Interfaces;
 using Schuldenbuch.Core.DTOs.DebtDtos;
 
@@ -19,33 +16,48 @@ namespace Schuldenbuch.Core.Services
 
         public async Task<AddDebtStatusDto> AddDebtAsync(AddDebtDto dto)
         {
-            var person = await _db.GetPersonAsync(dto.PersonId);
-
-            if (person == null)
+            try
             {
-                return new AddDebtStatusDto
+                var person = await _db.GetPersonAsync(dto.PersonId);
+
+                if (person == null)
                 {
-                    Status = DebtStatus.IdNotFound,
-                    Message = $"Keine Person mit ID {dto.PersonId} gefunden."
+                    return new AddDebtStatusDto
+                    {
+                        Status = DebtStatus.IdNotFound,
+                        Message = $"Keine Person mit ID {dto.PersonId} gefunden."
+                    };
+                }
+
+                var debt = new Entities.DebtEntity
+                {
+                    PersonId = dto.PersonId,
+                    Person = person,
+                    Amount = decimal.Parse(dto.Amount.ToString(), CultureInfo.InvariantCulture),
+                    Reason = dto.Description,
+                    Date = DateTime.UtcNow,
+                    PaidDate = null
+                };
+
+                await _db.AddDebtAsync(debt);
+
+                return new AddDebtStatusDto()
+                {
+                    Status = DebtStatus.Success,
+                    Message = $"Schulden mit ID {debt.Id} gespeichert."
                 };
             }
-
-            var debt = new Entities.DebtEntity
+            catch (Exception ex)
             {
-                PersonId = dto.PersonId,
-                Amount = dto.Amount,
-                Reason = dto.Description,
-                Date = DateTime.UtcNow,
-                PaidDate = null
-            };
+                // Holt die innerste, echte Fehlermeldung der Datenbank ab
+                var realMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
 
-            await _db.AddDebtAsync(debt);
-
-            return new AddDebtStatusDto()
-            {
-                Status = DebtStatus.Success,
-                Message = $"Schulden mit ID {debt.Id} gespeichert."
-            };
+                return new AddDebtStatusDto
+                {
+                    Status = DebtStatus.IdNotFound, // Nutzen wir als Error-Signal
+                    Message = $"Server-Fehler: {realMessage} | Stack: {ex.StackTrace}"
+                };
+            }
         }
 
 
@@ -73,8 +85,10 @@ namespace Schuldenbuch.Core.Services
         }
 
 
-        public async Task<UpdateDebtResultDto> UpdateDebtAsync(int id, decimal amount, bool isAddition)
+        public async Task<UpdateDebtResultDto> UpdateDebtAsync(int id, string amount)
         {
+            var parsedAmount = decimal.Parse(amount.ToString(), CultureInfo.InvariantCulture);
+
             var debt = await _db.GetDebtAsync(id);
 
             if (debt == null)
@@ -87,9 +101,8 @@ namespace Schuldenbuch.Core.Services
                 };
             }
 
-            decimal dif = isAddition ? amount : -amount;
 
-            decimal newAmount = debt.Amount + dif;
+            decimal newAmount = debt.Amount + parsedAmount;
 
             if (newAmount <= 0)
             {
@@ -99,7 +112,7 @@ namespace Schuldenbuch.Core.Services
                 return new UpdateDebtResultDto()
                 {
                     Id = id,
-                    Amount = 0,
+                    Amount = "0",
                     Status = UpdateStatus.Success,
                     Message = "Der Eintrag wurde abbezahlt."
                 };
@@ -112,7 +125,7 @@ namespace Schuldenbuch.Core.Services
                 return new UpdateDebtResultDto()
                 {
                     Id = id,
-                    Amount = debt.Amount,
+                    Amount = debt.Amount.ToString(),
                     Status = UpdateStatus.Success,
                     Message = $"Schuld mit ID {id} erfolgreich aktualisiert."
                 };

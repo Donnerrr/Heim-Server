@@ -372,7 +372,7 @@
     {
         debtIdToUpdate = selectedDebt.Id;
 
-        UpdateDto.Amount = selectedDebt.Amount;
+        UpdateDto.Amount = selectedDebt.Amount.ToString();
 
         Addition = isAddition;
 
@@ -381,7 +381,7 @@
 
     private async Task HandleUpdateDebt()
     {
-        var result = await DebtService.UpdateDebtAsync(debtIdToUpdate, UpdateDto.Amount, Addition);
+        var result = await DebtService.UpdateDebtAsync(debtIdToUpdate, UpdateDto.Amount);
 
         if (result.Status == UpdateStatus.Success)
         {

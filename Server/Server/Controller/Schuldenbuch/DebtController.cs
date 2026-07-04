@@ -28,8 +28,17 @@ namespace Server.Controller.Schuldenbuch
         [HttpPost]
         public async Task<IActionResult> AddDebt([FromBody] AddDebtDto dto)
         {
-            var result = await _debtService.AddDebtAsync(dto);
-            return Ok(result.Message);
+            try
+            {
+                var result = await _debtService.AddDebtAsync(dto);
+                return Ok(result.Message);
+            }
+            catch (Exception ex)
+            {
+                // Das hier schickt den ECHTEN C#-Fehlertext mitsamt Stacktrace direkt an den Browser
+                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return StatusCode(500, $"C# Crash: {innerMessage} \n\n StackTrace: {ex.StackTrace}");
+            }
         }
 
         [HttpDelete("{id}")]
@@ -48,9 +57,9 @@ namespace Server.Controller.Schuldenbuch
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDebt(int id, [FromBody] decimal amount, bool isAddition)
+        public async Task<IActionResult> UpdateDebt(int id, [FromBody] string amount)
         {
-            var result = await _debtService.UpdateDebtAsync(id, amount, isAddition);
+            var result = await _debtService.UpdateDebtAsync(id, amount);
             switch (result.Status)
             {
                 case UpdateStatus.Success:

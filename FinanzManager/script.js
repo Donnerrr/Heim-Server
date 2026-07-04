@@ -1,3 +1,7 @@
+let currentPersonId = null; // Globale Variable, um die aktuelle Person zu speichern
+let currentPersonName = null; // Globale Variable, um den aktuellen Personennamen zu speichern
+let currentDebtId = null; // Globale Variable, um die aktuelle Schuld zu speichern
+
 /* ==========================================================================
    1. NAVIGATION (ANSICHTEN UMSCHALTEN)
    ========================================================================== */
@@ -8,9 +12,6 @@ function hideAllSections() {
     document.getElementById("SchuldenDetailSection").classList.add("hidden");
     document.getElementById("FinanzSection").classList.add("hidden");
     
-    // Falls das Hauptmenü (Ebene 1) in einem eigenen Container liegt, hier auch steuern:
-    // Im aktuellen HTML liegt Ebene 1 direkt im body. Um sie auszublenden, packen wir sie optional in eine Section.
-    // Für den Moment steuern wir die Sichtbarkeit der Dashboard-Kacheln direkt über den app-container.
     const mainDashboard = document.querySelector("body > .app-container:not([id])");
     const mainSubtitle = document.querySelector(".subtitle");
     
@@ -22,7 +23,6 @@ function hideAllSections() {
 function openDashboard() {
     hideAllSections();
     
-    // Dashboard-Elemente wieder einblenden
     const mainDashboard = document.querySelector("body > .app-container:not([id])");
     const mainSubtitle = document.querySelector(".subtitle");
     
@@ -34,8 +34,6 @@ function openDashboard() {
 function openDebts() {
     hideAllSections();
     document.getElementById("SchuldenSection").classList.remove("hidden");
-    
-    // Hier triggern wir direkt das Laden der Personen aus der DB
     loadPersonsFromDB();
 }
 
@@ -43,52 +41,123 @@ function openDebts() {
 function openFinances() {
     hideAllSections();
     document.getElementById("FinanzSection").classList.remove("hidden");
-    
-    // Hier triggern wir das Laden der Verträge/Raten aus der DB
     loadFinancesFromDB();
 }
 
 
 /* ==========================================================================
-   2. DYNAMISCHES LADEN & DB-SCHNITTSTELLEN (PLATZHALTER)
-   Genau nach deiner Logik-Skizze aufgebaut!
+   2. DYNAMISCHES LADEN & DB-SCHNITTSTELLEN
    ========================================================================== */
-
+//#region Dynamisches Personen laden
 // Läuft beim Klick auf "Schuldenbuch"
-function loadPersonsFromDB() {
+async function loadPersonsFromDB() {
     console.log("DB-Aufruf: Lade alle Personen...");
     const container = document.getElementById("Schulden-Container");
-    
-    // Platzhalter für das spätere Fetching
-    container.innerHTML = `
-        <div class="app" onclick="loadPersonDetails(1)">
-            <h3>Max Mustermann</h3>
-            <div class="amount">45,00 €</div>
-            <div class="details">Zuletzt geändert: Gestern</div>
-        </div>
-    `;
-}
 
+    container.innerHTML = '<div class="loading">Lade Personen...</div>'; // Korrigiert: "<" ergänzt
+
+    try {
+        const response = await fetch('https://localhost:7033/api/Schuldenbuch/Person');
+        
+        if (!response.ok) {
+            throw new Error(`Server-Fehler: ${response.status} ${response.statusText}`);
+        }
+
+        const persons = await response.json();
+
+        if (persons.length === 0) {
+            container.innerHTML = '<div class="empty-state">Keine Personen gefunden.</div>';
+            return;
+        }
+
+        container.innerHTML = ''; 
+
+        // Dynamisches Erstellen der Personenkacheln
+        persons.forEach(person => {
+            
+            const personCard = `
+                <div class="app" onclick="loadPersonDetails(${person.id}, '${escapeHtml(person.name)}')">
+                    <h3>${escapeHtml(person.name)}</h3>
+                    
+                    <div class="details">${escapeHtml(person.street)}, ${escapeHtml(person.zipCode)} ${escapeHtml(person.city)}</div>
+                    <button class="btn btn-primary" onclick="deletePerson(event, ${person.id})">Löschen</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', personCard);
+        });
+
+    } catch (error) { // Korrigiert: Hier hat der gesamte Catch-Block gefehlt!
+        console.error("Fehler beim Laden der Personen:", error);
+        container.innerHTML = '<div class="error-state">Fehler beim Laden der Daten vom Server.</div>';
+    }
+}
+//#endregion
+
+
+//#region Dynamisches Laden der Schulden einer Person
 // Ebene 3: Läuft beim Klick auf eine Personenkachel
-function loadPersonDetails(personId) {
+async function loadPersonDetails(personId) {
+    currentPersonId = personId; 
+
     hideAllSections();
     document.getElementById("SchuldenDetailSection").classList.remove("hidden");
     
-    // Namen der Person dynamisch setzen
-    document.getElementById("CurrentPersonName").innerText = `Schulden von Person #${personId}`;
+    document.getElementById("CurrentPersonName").innerText = "Lade Details...";
     
-    console.log(`DB-Aufruf: Lade spezifische Schulden für Person-ID: ${personId}...`);
     const container = document.getElementById("Personen-Schulden-Container");
-    
-    // Platzhalter für die konkreten Schuldposten dieser Person
-    container.innerHTML = `
-        <div class="app">
-            <h3>Kasten Bier</h3>
-            <div class="amount">15,50 €</div>
-            <div class="details">Ausgeliehen am: 12.06.2026</div>
-        </div>
-    `;
+    container.innerHTML = '<div class="loading">Lade Schulden...</div>';
+
+    try {
+        const response = await fetch(`https://localhost:7033/api/Schuldenbuch/Person/${personId}`);
+        
+        if (!response.ok) {
+            throw new Error(`Server-Fehler: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // 1. DA WAR DER FEHLER: Wir müssen über data.person gehen!
+        const personObj = data.person;
+
+        if (personObj) {
+            // Namen setzen
+            document.getElementById("CurrentPersonName").innerText = `Schulden von ${personObj.name}`;
+            
+            // Schulden-Array holen
+            const debts = personObj.debts || [];
+
+            if (debts.length === 0) {
+                container.innerHTML = '<div class="empty-state">Keine Schulden gefunden.</div>';
+                return;
+            }
+
+            container.innerHTML = ''; 
+
+            // Kacheln rendern (mit debt.reason aus deinem Swagger)
+            debts.forEach(debt => {
+                const personCard = `
+                    <div class="app">
+                        <h3>${formatCurrency(debt.amount)}</h3>
+                        <div class="details">${escapeHtml(debt.reason || 'Kein Verwendungszweck')}</div>
+                        <button class="btn btn-primary" onclick="deleteDebt(${debt.id})">Löschen</button>
+                        <button class="btn btn-primary" onclick="openUpdateDebtModal(${debt.id}, ${debt.amount})">Bearbeiten</button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', personCard);
+                
+            });
+        } else {
+            throw new Error("Personen-Objekt fehlt in der Server-Antwort");
+        }
+
+    } catch (error) {
+        console.error("Fehler beim Laden der Schulden:", error);
+        document.getElementById("CurrentPersonName").innerText = "Fehler beim Laden";
+        container.innerHTML = '<div class="error-state">Fehler beim Laden der Daten vom Server.</div>';
+    }
 }
+
+//#endregion
 
 // Läuft beim Klick auf "Finanzen"
 function loadFinancesFromDB() {
@@ -103,3 +172,197 @@ function loadFinancesFromDB() {
         </div>
     `;
 }
+
+//#region MODAL-FUNKTIONEN
+
+function openModal(modalId) {
+    document.getElementById(modalId).classList.remove("hidden");
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add("hidden");
+}
+
+//#endregion
+
+//#region PERSONEN-HINZUFÜGEN
+async function savePerson(event) {
+    event.preventDefault(); 
+    
+    const personData = {
+        name: document.getElementById("person-name").value,
+        street: document.getElementById("street").value,
+        zipcode: document.getElementById("ZipCode").value,
+        city: document.getElementById("city").value
+    };
+    
+    try {
+        const response = await fetch('https://localhost:7033/api/Schuldenbuch/Person', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(personData)
+        });
+
+        if (response.ok) {
+            console.log('Person erfolgreich gespeichert!');
+            closeModal('AddPersonModal'); 
+            loadPersonsFromDB(); 
+            document.getElementById("add-person-form").reset(); 
+        } else {
+            console.error('Fehler beim Speichern der Person:', response.statusText);
+            alert('Fehler beim Speichern der Person. Bitte versuchen Sie es erneut.');
+        }
+    } catch (error) {
+        console.error('Fehler beim Speichern der Person:', error);
+    }
+}
+//#endregion
+
+//#region SCHULD-HINZUFÜGEN
+async function saveEntry(event) {
+    event.preventDefault(); 
+
+    if (currentPersonId === null) {
+        console.error('Keine Person ausgewählt.');
+        alert('Keine Person ausgewählt.');
+        return;
+    }
+    
+    const entryData = {
+        personId: currentPersonId, 
+        amount: document.getElementById("entry-amount").value,
+        description: document.getElementById("entry-purpose").value // Im HTML heißt die ID 'entry-purpose'
+    };
+
+    console.log("Sende Payload an API:", JSON.stringify(entryData));
+
+    try {
+        const response = await fetch('https://localhost:7033/api/Schuldenbuch/Debt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(entryData)
+        });
+
+        if (response.ok) {
+            console.log('Schuld erfolgreich gespeichert!');
+            closeModal('AddEntryModal'); 
+            document.getElementById("add-entry-form").reset(); 
+            loadPersonDetails(currentPersonId); 
+
+        } else {
+    const errorText = await response.text();
+    console.error('Fehler beim Speichern der Schuld:', errorText);
+    alert('Fehler: ' + errorText);
+}
+    } catch (error) {
+        console.error('Fehler beim Speichern der Schuld:', error);
+    }
+}
+//#endregion
+
+//#region HILFSFUNKTIONEN
+
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(amount);
+}
+
+//#endregion
+
+//#region SCHULD LÖSCHEN
+async function deleteDebt(debtId) {
+    if (confirm("Sind Sie sicher, dass Sie diese Schuld löschen möchten?")) {
+        
+        const response = await fetch(`https://localhost:7033/api/Schuldenbuch/Debt/${debtId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            console.log('Schuld erfolgreich gelöscht!');
+            loadPersonDetails(currentPersonId); 
+        } else {
+            console.error("Fehler beim Löschen:", await response.text());
+        }
+    }
+
+}
+
+//#endregion
+
+//#region PERSON LÖSCHEN
+async function deletePerson(event, personId) {
+    event.stopPropagation(); // Verhindert das Auslösen des onclick-Events der Kachel
+    if (confirm("Sind Sie sicher, dass Sie diese Person löschen möchten?")) {
+
+        const response = await fetch(`https://localhost:7033/api/Schuldenbuch/Person/${personId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            console.log('Person erfolgreich gelöscht!');
+            loadPersonsFromDB();
+            
+        } else {
+            console.error("Fehler beim Löschen:", await response.text());
+        }
+    }
+}
+
+//#endregion
+
+//#region Update Debt Modal öffnen
+function openUpdateDebtModal(debtId) {
+    currentDebtId = debtId; // Speichert die aktuelle Schuld-ID in der globalen Variable
+    document.getElementById("update-debt-id").value = debtId; // Setzt die Schuld-ID im versteckten Input-Feld
+    openModal('UpdateDebtModal');
+}
+
+//#endregion
+
+//#region SCHULD AKTUALISIEREN
+async function updateDebt(event) {
+    event.preventDefault();
+    
+    
+    const debtId = currentDebtId; // Verwendet die globale Variable, die beim Öffnen des Modals gesetzt wurde
+    const updatedAmount = document.getElementById("update-debt-amount").value;
+
+
+    try {
+        const response = await fetch(`https://localhost:7033/api/Schuldenbuch/Debt/${debtId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedAmount)
+        });
+
+        if (response.ok) {
+            console.log('Schuld erfolgreich aktualisiert!');
+            closeModal('UpdateDebtModal');
+            loadPersonDetails(currentPersonId);
+            currentDebtId = null; // Setzt die globale Variable zurück
+            document.getElementById("update-debt-amount").value = ""; // Setzt das Formular zurück
+        } else {
+            console.error("Fehler beim Aktualisieren:", await response.text());
+        }
+    } catch (error) {
+        console.error("Fehler beim Aktualisieren:", error);
+    }
+}
+
+//#endregion

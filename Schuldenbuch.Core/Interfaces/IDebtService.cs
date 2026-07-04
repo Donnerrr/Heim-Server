@@ -26,6 +26,6 @@ namespace Schuldenbuch.Core.Interfaces
 
         Task<DeleteDebtResultDto> DeleteDebtAsync(int id);
 
-        Task<UpdateDebtResultDto> UpdateDebtAsync(int id, decimal amount, bool isAddition);
+        Task<UpdateDebtResultDto> UpdateDebtAsync(int id, string amount);
     }
 }

@@ -24,14 +24,23 @@ if (!Directory.Exists(dataFolder))
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCorsPolicy", policy =>
+    {
+        policy.WithOrigins() // Ersetze dies durch die tatsächlichen Ursprünge deiner Blazor-App
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers(); // Füge die Controller-Services hinzu
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.WebHost.UseUrls("http://localhost:5002");
-//builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
-// Hier zwingen wir den Server, auf allen IPs zu lauschen:
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -58,53 +67,51 @@ if (connectionString.Contains("{ContentRoot}"))
     connectionString = connectionString.Replace("{ContentRoot}", contenRoot);
 }
 
-//var connectionString = $"Data Source={dbPath}";
-
 // 2. Den DbContext mit dem Pfad füttern
 builder.Services.AddDbContext<Server.Database.SchuldenbuchContext>(options =>
     options.UseNpgsql(connectionString), ServiceLifetime.Transient);
 
 
-builder.Services.AddScoped<Schuldenbuch.Core.Interfaces.ISchuldenbuchDatabase, Server.Database.SchuldenbuchRepository>();
-// Damit weiß das Lager, was 'IDatabase' ist und dass es die 'SqliteDatabase' nutzen soll!
+builder.Services.AddScoped<Schuldenbuch.Core.Interfaces.ISchuldenbuchDatabase, Server.Database.SchuldenbuchRepository>(); // DI für die Datenbank-Repository-Klasse
+
+
 
 
 builder.Services.AddScoped<IPersonService, PersonService>();
 
-builder.Services.AddScoped<DebtService>();
+builder.Services.AddScoped<IDebtService, DebtService>();
 
-
-builder.Host.UseWindowsService();
 
 var app = builder.Build();
 
-
-
-// Configure the HTTP request pipeline.
+// 1. Basis-Sicherheits- & Fehler-Handling
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseStatusCodePagesWithReExecute("/not-found");
 app.UseHttpsRedirection();
-
 app.UseAntiforgery();
-
 app.MapStaticAssets();
-app.MapRazorComponents<Server.Components.App>()
-    .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(Schuldenbuch.Components.Dashboard).Assembly);
 
-// Swagger nur in Entwicklung
+// 2. Swagger (Nur im Dev-Modus)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapControllers();
-
 }
 
+// 3. CORS (MUSS zwingend vor dem Routing und den Controllern kommen!)
+app.UseCors("DevCorsPolicy");
+
+// 4. Blazor & Komponenten-Routing
+app.MapRazorComponents<Server.Components.App>()
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(typeof(Schuldenbuch.Components.Dashboard).Assembly);
+
+// 5. API-Controller (Aus der IF-Bedingung befreit, damit sie immer greifen)
+app.MapControllers();
 
 app.Run();

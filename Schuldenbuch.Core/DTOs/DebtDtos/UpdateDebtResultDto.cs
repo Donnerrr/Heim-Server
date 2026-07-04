@@ -31,7 +31,7 @@ namespace Schuldenbuch.Core.DTOs.DebtDtos
     public class UpdateDebtResultDto
     {
         public int Id { get; set; }
-        public decimal Amount { get; set; }
+        public string Amount { get; set; }
 
         public string Message { get; set; }
 
