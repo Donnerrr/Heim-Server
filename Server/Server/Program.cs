@@ -27,11 +27,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("DevCorsPolicy", policy =>
+    options.AddPolicy("AllowSpecific", policy =>
     {
-        policy.WithOrigins() // Ersetze dies durch die tatsächlichen Ursprünge deiner Blazor-App
+        policy.WithOrigins("https://intern.pottanker.de", "http://intern.pottanker.de") // Ersetze dies durch die tatsächlichen Ursprünge deiner Blazor-App
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -40,6 +41,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5149); // HTTP
+    options.ListenAnyIP(7033, listenOptions =>
+    {
+        listenOptions.UseHttps(); // HTTPS
+    });
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -104,7 +113,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // 3. CORS (MUSS zwingend vor dem Routing und den Controllern kommen!)
-app.UseCors("DevCorsPolicy");
+app.UseCors("AllowSpecific");
 
 // 4. Blazor & Komponenten-Routing
 app.MapRazorComponents<Server.Components.App>()

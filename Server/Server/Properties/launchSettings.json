@@ -7,7 +7,7 @@
         "launchBrowser": true,
         "applicationUrl": "http://*:5149",
         "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
+          "ASPNETCORE_ENVIRONMENT": "Production"
         }
       },
       "https": {
@@ -16,7 +16,7 @@
         "launchBrowser": true,
         "applicationUrl": "https://*:7033;http://*:5149",
         "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
+          "ASPNETCORE_ENVIRONMENT": "Production"
         }
       }
     }
