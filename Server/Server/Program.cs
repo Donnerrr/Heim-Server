@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "https://finanzen.pottanker.de", // Nur das ist wirklich nötig
-            "www.finanzen.pottanker.de"
+            "https://www.finanzen.pottanker.de"
         )
         .AllowAnyMethod()
         .AllowAnyHeader();
