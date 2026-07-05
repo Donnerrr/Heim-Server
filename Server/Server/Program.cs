@@ -29,7 +29,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecific", policy =>
     {
-        policy.WithOrigins("https://intern.pottanker.de", "http://intern.pottanker.de") // Ersetze dies durch die tatsächlichen Ursprünge deiner Blazor-App
+        policy.WithOrigins("https://finanzmanager.pottanker.de", "http://finanzmanager.pottanker.de") // Ersetze dies durch die tatsächlichen Ursprünge deiner Blazor-App
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
