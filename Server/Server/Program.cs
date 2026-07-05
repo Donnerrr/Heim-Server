@@ -27,12 +27,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecific", policy =>
+    options.AddPolicy("AllowPWA", policy =>
     {
-        policy.WithOrigins("https://finanzmanager.pottanker.de", "http://finanzmanager.pottanker.de") // Ersetze dies durch die tatsächlichen Ursprünge deiner Blazor-App
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy.WithOrigins(
+            "https://finanzen.pottanker.de", // Nur das ist wirklich nötig
+            "https://www.finanzen.pottanker.de"
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+        // .AllowCredentials() ist optional
     });
 });
 
@@ -113,7 +116,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // 3. CORS (MUSS zwingend vor dem Routing und den Controllern kommen!)
-app.UseCors("AllowSpecific");
+app.UseCors("AllowPWA");
 
 // 4. Blazor & Komponenten-Routing
 app.MapRazorComponents<Server.Components.App>()
