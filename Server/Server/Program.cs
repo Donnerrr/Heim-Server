@@ -47,10 +47,11 @@ builder.Services.AddSwaggerGen();
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(5149); // HTTP
-    options.ListenAnyIP(7033, listenOptions =>
-    {
-        listenOptions.UseHttps(); // HTTPS
-    });
+  //
+  //options.ListenAnyIP(7033, listenOptions =>
+  //  {
+  //      listenOptions.UseHttps(); // HTTPS
+  //  });
 });
 
 // Add services to the container.
@@ -104,7 +105,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePagesWithReExecute("/not-found");
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAntiforgery();
 app.MapStaticAssets();
 
