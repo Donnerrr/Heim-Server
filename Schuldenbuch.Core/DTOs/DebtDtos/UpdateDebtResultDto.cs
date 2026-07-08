@@ -24,6 +24,8 @@ namespace Schuldenbuch.Core.DTOs.DebtDtos
     public enum UpdateStatus
     {
         Success,
+        ValidationError,
+
         Failed
     }
 

@@ -4,6 +4,11 @@ using System.Text;
 
 namespace Schuldenbuch.Core.DTOs.DebtDtos
 {
+	public enum AddDebtStatus
+	{
+		Success,
+		
+	}
 
 	public class AddDebtDto
 	{

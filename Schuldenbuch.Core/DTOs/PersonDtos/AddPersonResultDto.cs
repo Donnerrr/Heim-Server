@@ -2,7 +2,8 @@ namespace Schuldenbuch.Core.DTOs.PersonDtos;
 
 public enum AddPersonStatus
 {
-	Success
+	Success,
+	ValidationError
 }
 
 public class AddPersonResultDto

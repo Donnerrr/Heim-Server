@@ -28,9 +28,12 @@ namespace Server.Controller.Schuldenbuch
         [HttpPost]
         public async Task<IActionResult> AddDebt([FromBody] AddDebtDto dto)
         {
-            try
+
+             try
             {
                 var result = await _debtService.AddDebtAsync(dto);
+
+                
                 return Ok(result.Message);
             }
             catch (Exception ex)
@@ -65,6 +68,8 @@ namespace Server.Controller.Schuldenbuch
                 case UpdateStatus.Success:
                     return Ok(result.Message);
                 case UpdateStatus.Failed:
+                    return BadRequest(result.Message);
+                case UpdateStatus.ValidationError:
                     return BadRequest(result.Message);
                 default:
                     return StatusCode(500, "Unexpected error occurred.");

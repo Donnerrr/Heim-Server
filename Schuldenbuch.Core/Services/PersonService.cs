@@ -28,6 +28,43 @@ namespace Schuldenbuch.Core.Services
 
         public async Task<AddPersonResultDto> AddPersonAsync(AddPersonDto dto)
         {
+            if(string.IsNullOrWhiteSpace(dto.Name))
+            {
+                return new AddPersonResultDto()
+                {
+                    Status = AddPersonStatus.ValidationError,
+                    Message = "Name darf nicht leer sein."
+                };
+            } 
+
+            if(string.IsNullOrWhiteSpace(dto.Street))
+            {
+                return new AddPersonResultDto()
+                {
+                    Status = AddPersonStatus.ValidationError,
+                    Message = "Straße darf nicht leer sein."
+                };
+            }
+
+            if(string.IsNullOrWhiteSpace(dto.ZipCode))
+            {
+                return new AddPersonResultDto()
+                {
+                    Status = AddPersonStatus.ValidationError,
+                    Message = "PLZ darf nicht leer sein."
+                };
+            }
+
+            if(string.IsNullOrWhiteSpace(dto.City))
+            {
+                return new AddPersonResultDto()
+                {
+                    Status = AddPersonStatus.ValidationError,
+                    Message = "Ort darf nicht leer sein."
+                };
+            }
+
+
 
             var person = new Entities.PersonEntity
             {
@@ -82,7 +119,7 @@ namespace Schuldenbuch.Core.Services
                 {
                     Status = GetPersonStatus.NotFound,
                     Message = $"Person mit ID {id} nicht in der Datenbank gefunden.",
-                    Person = null
+                    
                 };
             }
 

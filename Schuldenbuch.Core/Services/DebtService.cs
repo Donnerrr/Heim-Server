@@ -16,9 +16,32 @@ namespace Schuldenbuch.Core.Services
 
         public async Task<AddDebtStatusDto> AddDebtAsync(AddDebtDto dto)
         {
+            
+            if (string.IsNullOrWhiteSpace(dto.Amount))
+                {
+                    return new AddDebtStatusDto
+                    {
+                        Status = DebtStatus.ValidationError,
+                        Message = "Betrag darf nicht leer sein."
+                    };
+                }
+
+            if (string.IsNullOrWhiteSpace(dto.Description))
+                {
+                    return new AddDebtStatusDto
+                    {
+                        Status = DebtStatus.ValidationError,
+                        Message = "Beschreibung darf nicht leer sein."
+                    };
+                }
+
+            
+
             try
             {
                 var person = await _db.GetPersonAsync(dto.PersonId);
+
+                
 
                 if (person == null)
                 {
@@ -87,6 +110,16 @@ namespace Schuldenbuch.Core.Services
 
         public async Task<UpdateDebtResultDto> UpdateDebtAsync(int id, string amount)
         {
+
+            if (string.IsNullOrWhiteSpace(amount))
+            {
+                return new UpdateDebtResultDto
+                {
+                    Status = UpdateStatus.ValidationError,
+                    Message = "Betrag darf nicht leer sein."
+                };
+            }
+
             var parsedAmount = decimal.Parse(amount.ToString(), CultureInfo.InvariantCulture);
 
             var debt = await _db.GetDebtAsync(id);

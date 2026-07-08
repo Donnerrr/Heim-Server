@@ -25,7 +25,12 @@ namespace Server.Controller.Schuldenbuch
         {
             var result =  await _personService.AddPersonAsync(dto);
 
-            return Ok(result.Message);
+            return result.Status switch
+            {
+                AddPersonStatus.Success => Ok(new {Message = result.Message }),
+                AddPersonStatus.ValidationError => BadRequest(result.Message),
+                _ => StatusCode(500, "Unexpected error occurred.")
+            };
         }
 
         [HttpDelete("{id}")]

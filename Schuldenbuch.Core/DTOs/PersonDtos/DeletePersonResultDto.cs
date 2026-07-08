@@ -6,7 +6,7 @@ public enum DeleteStatus
 {
     Success,
     NotFound,
-    NeedsConfirmation
+    
 }
 
 

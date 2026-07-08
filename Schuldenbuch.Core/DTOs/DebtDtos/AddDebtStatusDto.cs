@@ -7,7 +7,8 @@
 public enum DebtStatus
 {
 		Success,
-		IdNotFound
+		IdNotFound,
+		ValidationError
 }
 
 public class AddDebtStatusDto
