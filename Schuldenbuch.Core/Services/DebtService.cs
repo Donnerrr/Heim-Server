@@ -35,7 +35,14 @@ namespace Schuldenbuch.Core.Services
                     };
                 }
 
-            
+            if (!decimal.TryParse(dto.Amount, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal parsedAmount))
+            {
+                return new AddDebtStatusDto
+                {
+                    Status = DebtStatus.ValidationError,
+                    Message = "Betrag ist ungültig."
+                };
+            }
 
             try
             {
@@ -56,7 +63,7 @@ namespace Schuldenbuch.Core.Services
                 {
                     PersonId = dto.PersonId,
                     Person = person,
-                    Amount = decimal.Parse(dto.Amount.ToString(), CultureInfo.InvariantCulture),
+                    Amount = parsedAmount,
                     Reason = dto.Description,
                     Date = DateTime.UtcNow,
                     PaidDate = null
