@@ -11,7 +11,7 @@
  * Beschreibung: Füge hier eine kurze Beschreibung hinzu, was diese Klasse tut.
  */
 
-namespace Schuldenbuch.Core.DTOs
+namespace Schuldenbuch.Core.DTOs.AuthentificationDtos
 {
     public record LoginRegisterRequest(string Username, string Password);
     public record LoginResponse(string Token, int UserId, string Username);

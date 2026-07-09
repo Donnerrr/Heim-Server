@@ -8,11 +8,11 @@
  */
 
 using Microsoft.AspNetCore.Mvc;
-using Schuldenbuch.Core.DTOs;
+using Schuldenbuch.Core.DTOs.AuthentificationDtos;
 using Schuldenbuch.Core.Interfaces;
 using Schuldenbuch.Core.Services;
 
-namespace Server.Controllers
+namespace Server.Controller.Authentification
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -10,10 +10,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Schuldenbuch.Core.Interfaces;
 using Schuldenbuch.Core.DTOs.DebtDtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Server.Controller.Schuldenbuch
 {
-
+    [Authorize]
     [ApiController]
     [Route("api/Schuldenbuch/[controller]")]
 

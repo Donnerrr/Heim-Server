@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Schuldenbuch.Components\Schuldenbuch.Components.csproj" />
     <ProjectReference Include="..\..\Schuldenbuch.Core\Schuldenbuch.Core.csproj" />
   </ItemGroup>
 

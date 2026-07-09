@@ -10,7 +10,7 @@ namespace Schuldenbuch.Core.Interfaces
         // Personen-Operationen
         Task AddPersonAsync(PersonEntity person);
         Task<PersonEntity?> GetPersonAsync(int id);
-        Task<List<PersonEntity>> GetAllPersonsAsync();
+        Task<List<PersonEntity>> GetAllPersonsAsync(int userId);
         Task DeletePersonAsync(int personId);
 
 

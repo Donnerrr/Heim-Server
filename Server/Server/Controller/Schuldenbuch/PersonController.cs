@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Schuldenbuch.Core.DTOs.PersonDtos;
+using Schuldenbuch.Core.Extensions;
 using Schuldenbuch.Core.Interfaces;
 
 
 
 namespace Server.Controller.Schuldenbuch
 {
-
+    [Authorize]
     [ApiController]
     [Route("api/Schuldenbuch/[controller]")]
 
@@ -65,7 +67,10 @@ namespace Server.Controller.Schuldenbuch
         [HttpGet]
         public async Task<IActionResult> GetAllPersons()
         {
-            var persons =  await _personService.GetAllPersonsAsync();
+
+            var userId = User.GetUserId(); // Aus dem Token auslesen
+
+            var persons =  await _personService.GetAllPersonsAsync(userId);
 
             return Ok(persons);
 

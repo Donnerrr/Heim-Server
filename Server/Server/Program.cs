@@ -157,10 +157,6 @@ app.UseCors("AllowPWA");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 4. Blazor & Komponenten-Routing
-app.MapRazorComponents<Server.Components.App>()
-    .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(Schuldenbuch.Components.Dashboard).Assembly);
 
 // 5. API-Controller (Aus der IF-Bedingung befreit, damit sie immer greifen)
 app.MapControllers();

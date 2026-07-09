@@ -3,7 +3,6 @@
     <Project Path="Server/Server/Server.csproj" Id="f0e8c84c-292c-441a-ae29-3c35412aca17" />
   </Folder>
   <Folder Name="/01_Schuldenbuch/">
-    <Project Path="Schuldenbuch.Components/Schuldenbuch.Components.csproj" Id="1902a770-2ba1-4a67-8fdc-ae1ffc0a5602" />
     <Project Path="Schuldenbuch.Core/Schuldenbuch.Core.csproj" />
   </Folder>
 </Solution>

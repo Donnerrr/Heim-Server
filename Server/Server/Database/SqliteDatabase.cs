@@ -68,9 +68,11 @@ namespace Server.Database
 
         }
 
-        public async Task<List<PersonEntity>> GetAllPersonsAsync()           // Methode zum Abrufen aller Personen aus der Datenbank
+        public async Task<List<PersonEntity>> GetAllPersonsAsync(int userId)           // Methode zum Abrufen aller Personen aus der Datenbank
         {
-            return await _context.Persons.ToListAsync();
+            return await _context.Persons
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
         }
 
 
@@ -91,6 +93,17 @@ namespace Server.Database
             }
 
 
+        }
+
+        public async Task<UserEntity?> GetUserByUsernameAsync(string username) // Methode zum Abrufen des Users anhand des Usernamens
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+        }
+
+        public async Task AddUserAsync(UserEntity user) //Methode zum Hinzufügen eines Users
+        {
+            await _context.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

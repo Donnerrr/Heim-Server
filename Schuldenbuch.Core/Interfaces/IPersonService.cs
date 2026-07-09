@@ -17,6 +17,6 @@ namespace Schuldenbuch.Core.Interfaces
 
         Task<GetPersonResultDto?> GetPersonAsync(int id);
 
-        Task<List<PersonListItemDto>> GetAllPersonsAsync();
+        Task<List<PersonListItemDto>> GetAllPersonsAsync(int userID);
     }
 }

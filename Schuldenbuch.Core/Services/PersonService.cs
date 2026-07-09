@@ -153,9 +153,9 @@ namespace Schuldenbuch.Core.Services
 
         }
 
-        public async Task<List<PersonListItemDto>> GetAllPersonsAsync()
+        public async Task<List<PersonListItemDto>> GetAllPersonsAsync(int userId)
         {
-            var entities = await _db.GetAllPersonsAsync();
+            var entities = await _db.GetAllPersonsAsync(userId);
 
             return entities.Select(p => new PersonListItemDto
             {

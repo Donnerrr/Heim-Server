@@ -115,7 +115,7 @@
     protected override async Task OnInitializedAsync()
     {
 
-        PersonList = await PersonService.GetAllPersonsAsync();
+        PersonList = await PersonService.GetAllPersonsAsync(userId);
 
     }
     private void ShowModal()
