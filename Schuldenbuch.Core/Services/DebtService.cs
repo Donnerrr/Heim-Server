@@ -127,7 +127,14 @@ namespace Schuldenbuch.Core.Services
                 };
             }
 
-            var parsedAmount = decimal.Parse(amount.ToString(), CultureInfo.InvariantCulture);
+            if (!decimal.TryParse(amount, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal parsedAmount))
+{
+    return new UpdateDebtResultDto
+    {
+        Status = UpdateStatus.ValidationError,
+        Message = "Betrag ist ungültig."
+    };
+}
 
             var debt = await _db.GetDebtAsync(id);
 
