@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2026 Nico Philipp
  * Datum: 12.06.2026 22:13:23
  * Projekt: Server.Controller
@@ -37,11 +37,13 @@ namespace Server.Controller.Schuldenbuch
                 return Ok(result.Message);
             }
             catch (Exception ex)
-            {
-                // Das hier schickt den ECHTEN C#-Fehlertext mitsamt Stacktrace direkt an den Browser
-                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return StatusCode(500, $"C# Crash: {innerMessage} \n\n StackTrace: {ex.StackTrace}");
-            }
+{
+    // Fehler loggen für dich
+    Console.Error.WriteLine($"Fehler in AddDebt: {ex.Message}\n{ex.StackTrace}");
+    
+    // Aber dem Client nur generische Nachricht
+    return StatusCode(500, "Ein interner Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+}
         }
 
         [HttpDelete("{id}")]
