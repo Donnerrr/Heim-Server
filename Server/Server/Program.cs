@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Schuldenbuch.Core.Services;
 using Schuldenbuch.Core.Interfaces;
+using Microsoft.Extensions.Hosting;
+
 
 
 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -46,7 +48,7 @@ builder.Services.AddSwaggerGen();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    var port = Environment.IsDevelopment() ? 5150 : 5149;
+    var port = builder.Environment.EnvironmentName == "Development" ? 5150 : 5149;
     options.ListenAnyIP(port); // HTTP
   //
   //options.ListenAnyIP(7033, listenOptions =>
