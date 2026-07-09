@@ -5,18 +5,18 @@
         "commandName": "Project",
         "dotnetRunMessages": true,
         "launchBrowser": true,
-        "applicationUrl": "http://*:5149",
+        "applicationUrl": "http://*:5150",
         "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Production"
+          "ASPNETCORE_ENVIRONMENT": "Development"
         }
       },
       "https": {
         "commandName": "Project",
         "dotnetRunMessages": true,
         "launchBrowser": true,
-        "applicationUrl": "https://*:7033;http://*:5149",
+        "applicationUrl": "https://*:7033;http://*:5150",
         "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Production"
+          "ASPNETCORE_ENVIRONMENT": "Development"
         }
       }
     }

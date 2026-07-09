@@ -47,12 +47,13 @@ namespace Schuldenbuch.Core.Services
             }
 
             if (parsedAmount <= 0)  // ← HIER!
-{
-    return new AddDebtStatusDto
-    {
-        Status = DebtStatus.ValidationError,
-        Message = "Betrag muss größer als 0 sein."
-    };
+            {
+                return new AddDebtStatusDto
+                {
+                    Status = DebtStatus.ValidationError,
+                    Message = "Betrag muss größer als 0 sein."
+                };
+            }
 
             try
             {
@@ -88,16 +89,16 @@ namespace Schuldenbuch.Core.Services
                 };
             }
             catch (Exception ex)
-{
-    // Hier könnte optionales Logging stattfinden
-    // _logger.LogError(ex, "Fehler beim Hinzufügen einer Schuld für Person {PersonId}", dto.PersonId);
+            {
+                // Hier könnte optionales Logging stattfinden
+                // _logger.LogError(ex, "Fehler beim Hinzufügen einer Schuld für Person {PersonId}", dto.PersonId);
     
-    return new AddDebtStatusDto
-    {
-        Status = DebtStatus.IdNotFound,
-        Message = "Fehler beim Speichern der Schuld. Bitte versuchen Sie es später erneut."
-    };
-}
+                return new AddDebtStatusDto
+                {
+                    Status = DebtStatus.IdNotFound,
+                    Message = "Fehler beim Speichern der Schuld. Bitte versuchen Sie es später erneut."
+                };
+            }
         }
 
 
@@ -138,13 +139,13 @@ namespace Schuldenbuch.Core.Services
             }
 
             if (!decimal.TryParse(amount, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal parsedAmount))
-{
-    return new UpdateDebtResultDto
-    {
-        Status = UpdateStatus.ValidationError,
-        Message = "Betrag ist ungültig."
-    };
-}
+            {
+                return new UpdateDebtResultDto
+                {
+                    Status = UpdateStatus.ValidationError,
+                    Message = "Betrag ist ungültig."
+                };
+            }
 
             var debt = await _db.GetDebtAsync(id);
 

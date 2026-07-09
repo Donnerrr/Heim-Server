@@ -46,7 +46,8 @@ builder.Services.AddSwaggerGen();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(5149); // HTTP
+    var port = Environment.IsDevelopment() ? 5150 : 5149;
+    options.ListenAnyIP(port); // HTTP
   //
   //options.ListenAnyIP(7033, listenOptions =>
   //  {
@@ -82,8 +83,8 @@ if (connectionString.Contains("{ContentRoot}"))
 
 // 2. Den DbContext mit dem Pfad füttern
 builder.Services.AddDbContext<Server.Database.SchuldenbuchContext>(options =>
-    //options.UseNpgsql(connectionString), ServiceLifetime.Transient);
-    options.UseSqlite($"Data Source={dbPath}"), ServiceLifetime.Transient);
+    options.UseNpgsql(connectionString), ServiceLifetime.Transient);
+    //options.UseSqlite($"Data Source={dbPath}"), ServiceLifetime.Transient);
 
 builder.Services.AddScoped<Schuldenbuch.Core.Interfaces.ISchuldenbuchDatabase, Server.Database.SchuldenbuchRepository>(); // DI für die Datenbank-Repository-Klasse
 
