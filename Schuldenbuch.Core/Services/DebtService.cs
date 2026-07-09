@@ -78,16 +78,16 @@ namespace Schuldenbuch.Core.Services
                 };
             }
             catch (Exception ex)
-            {
-                // Holt die innerste, echte Fehlermeldung der Datenbank ab
-                var realMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-
-                return new AddDebtStatusDto
-                {
-                    Status = DebtStatus.IdNotFound, // Nutzen wir als Error-Signal
-                    Message = $"Server-Fehler: {realMessage} | Stack: {ex.StackTrace}"
-                };
-            }
+{
+    // Hier könnte optionales Logging stattfinden
+    // _logger.LogError(ex, "Fehler beim Hinzufügen einer Schuld für Person {PersonId}", dto.PersonId);
+    
+    return new AddDebtStatusDto
+    {
+        Status = DebtStatus.IdNotFound,
+        Message = "Fehler beim Speichern der Schuld. Bitte versuchen Sie es später erneut."
+    };
+}
         }
 
 
