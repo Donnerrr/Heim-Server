@@ -26,6 +26,8 @@ namespace Schuldenbuch.Core.Services
                     };
                 }
 
+            
+
             if (string.IsNullOrWhiteSpace(dto.Description))
                 {
                     return new AddDebtStatusDto
@@ -43,6 +45,14 @@ namespace Schuldenbuch.Core.Services
                     Message = "Betrag ist ungültig."
                 };
             }
+
+            if (parsedAmount <= 0)  // ← HIER!
+{
+    return new AddDebtStatusDto
+    {
+        Status = DebtStatus.ValidationError,
+        Message = "Betrag muss größer als 0 sein."
+    };
 
             try
             {
