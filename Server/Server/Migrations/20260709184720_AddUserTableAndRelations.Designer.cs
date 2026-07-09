@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Database;
@@ -11,9 +12,11 @@ using Server.Database;
 namespace Server.Migrations
 {
     [DbContext(typeof(SchuldenbuchContext))]
-    partial class HeimserverContextModelSnapshot : ModelSnapshot
+    [Migration("20260709184720_AddUserTableAndRelations")]
+    partial class AddUserTableAndRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,7 +109,7 @@ namespace Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", "public");
+                    b.ToTable("Users", "schuldenbuch");
                 });
 
             modelBuilder.Entity("Schuldenbuch.Core.Entities.DebtEntity", b =>

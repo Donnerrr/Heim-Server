@@ -1,8 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using Schuldenbuch.Core.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Schuldenbuch.Core.Interfaces;
-using Microsoft.Extensions.Hosting;
-
+using Schuldenbuch.Core.Services;
+using Server.Database;
+using Microsoft.EntityFrameworkCore;
 
 
 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -96,7 +98,38 @@ builder.Services.AddScoped<Schuldenbuch.Core.Interfaces.ISchuldenbuchDatabase, S
 builder.Services.AddScoped<IPersonService, PersonService>();
 
 builder.Services.AddScoped<IDebtService, DebtService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+// ===== JWT AUTHENTICATION =====
+var jwtSecret = builder.Configuration["Jwt:Secret"];
+
+if (string.IsNullOrEmpty(jwtSecret))
+{
+    throw new InvalidOperationException("Jwt:Secret fehlt in appsettings.json!");
+}
+
+var key = Encoding.UTF8.GetBytes(jwtSecret);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -121,6 +154,8 @@ if (app.Environment.IsDevelopment())
 
 // 3. CORS (MUSS zwingend vor dem Routing und den Controllern kommen!)
 app.UseCors("AllowPWA");
+app.UseAuthentication();
+app.UseAuthorization();
 
 // 4. Blazor & Komponenten-Routing
 app.MapRazorComponents<Server.Components.App>()

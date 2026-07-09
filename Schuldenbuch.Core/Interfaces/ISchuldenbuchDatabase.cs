@@ -21,5 +21,9 @@ namespace Schuldenbuch.Core.Interfaces
         Task DeleteDebtAsync(int id);
 
         Task UpdateDebtAsync(DebtEntity debt);
+
+        // User-Operationen
+        Task<UserEntity> GetUserByUsernameAsync(string userName);
+        Task AddUserAsync(UserEntity user);
     }
 }

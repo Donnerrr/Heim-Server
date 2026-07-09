@@ -98,5 +98,16 @@ namespace Server.Database
 
 
         }
+
+        public async Task<UserEntity?> GetUserByUsernameAsync(string username) // Methode zum Abrufen des Users anhand des Usernamens
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
+        }
+
+        public async Task AddUserAsync(UserEntity user) //Methode zum Hinzufügen eines Users
+        {
+            await _context.AddAsync(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

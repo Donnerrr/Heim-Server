@@ -29,7 +29,10 @@ namespace Server.Database
             modelBuilder.Entity<DebtEntity>()
                 .ToTable("Debts", "public"); // Explicitly set the table name and schema for DebtEntity
 
-            
+            modelBuilder.Entity<UserEntity>()
+                .ToTable("Users", "public"); // Explicitly set the table name and schema for UserEntity
+
+
             // 3. Configure the relationships between entities
             // Configure the relationship between PersonEntity and UserEntity
             modelBuilder.Entity<PersonEntity>()
