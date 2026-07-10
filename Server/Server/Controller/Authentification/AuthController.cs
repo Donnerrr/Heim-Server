@@ -31,12 +31,12 @@ namespace Server.Controller.Authentification
         public async Task<IActionResult> Register([FromBody] LoginRegisterRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
-                return BadRequest("Username und Passwort dürfen nicht leer sein.");
+                return BadRequest(new ErrorResponse("Username und Passwort dürfen nicht leer sein."));
 
             var user = await _authService.RegisterAsync(request.Username, request.Password);
 
             if (user == null)
-                return Conflict("Dieser Username ist bereits vergeben.");
+                return Conflict(new ErrorResponse("Dieser Username ist bereits vergeben."));
 
             var token = _tokenGenerator.GenerateToken(user);
             return Ok(new { token, user.Id, user.Username });
@@ -46,12 +46,12 @@ namespace Server.Controller.Authentification
         public async Task<IActionResult> Login([FromBody] LoginRegisterRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
-                return BadRequest("Username und Passwort dürfen nicht leer sein.");
+                return BadRequest(new ErrorResponse("Username und Passwort dürfen nicht leer sein."));
 
             var user = await _authService.ValidateCredentialsAsync(request.Username, request.Password);
 
             if (user == null)
-                return Unauthorized("Username oder Passwort falsch.");
+                return Unauthorized(new ErrorResponse("Username oder Passwort falsch."));
 
             var token = _tokenGenerator.GenerateToken(user);
             return Ok(new LoginResponse(token, user.Id, user.Username));
