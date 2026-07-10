@@ -38,7 +38,8 @@ namespace Server.Controller.Authentification
             if (user == null)
                 return Conflict("Dieser Username ist bereits vergeben.");
 
-            return Ok(new { user.Id, user.Username });
+            var token = _tokenGenerator.GenerateToken(user);
+            return Ok(new { token, user.Id, user.Username });
         }
 
         [HttpPost("login")]
