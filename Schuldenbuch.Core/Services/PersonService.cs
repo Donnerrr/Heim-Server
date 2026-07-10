@@ -11,6 +11,7 @@ using Schuldenbuch.Core.DTOs;
 using Schuldenbuch.Core.Interfaces;
 using Schuldenbuch.Core.DTOs.PersonDtos;
 using Schuldenbuch.Core.DTOs.DebtDtos;
+using System.ComponentModel;
 
 
 
@@ -26,7 +27,7 @@ namespace Schuldenbuch.Core.Services
         }
 
 
-        public async Task<AddPersonResultDto> AddPersonAsync(AddPersonDto dto)
+        public async Task<AddPersonResultDto> AddPersonAsync(AddPersonDto dto, int userId)
         {
             if(string.IsNullOrWhiteSpace(dto.Name))
             {
@@ -71,7 +72,8 @@ namespace Schuldenbuch.Core.Services
                 Name = dto.Name,
                 Street = dto.Street,
                 ZipCode = dto.ZipCode,
-                City = dto.City
+                City = dto.City,
+                UserId = userId
             };
 
             await _db.AddPersonAsync(person);

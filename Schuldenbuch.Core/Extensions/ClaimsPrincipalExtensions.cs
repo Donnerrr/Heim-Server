@@ -19,9 +19,20 @@ namespace Schuldenbuch.Core.Extensions
     {
         public static int GetUserId(this ClaimsPrincipal principal)
         {
-            var idClaim = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            // Wir suchen explizit nach dem String, der auch in deinem Token steht
+            var idClaim = principal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            // Falls das nicht greift, versuchen wir es mit dem Kurznamen (manchmal registriert ASP.NET das um)
+            if (idClaim == null)
+            {
+                idClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+
             if (idClaim == null || !int.TryParse(idClaim, out var userId))
-                throw new UnauthorizedAccessException("Kein gültiger User-Claim im Token.");
+            {
+                throw new UnauthorizedAccessException("User-ID konnte nicht aus dem Token extrahiert werden.");
+            }
+
             return userId;
         }
     }

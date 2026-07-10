@@ -11,7 +11,7 @@ namespace Schuldenbuch.Core.Interfaces
 {
     public interface IPersonService
     {
-        Task<AddPersonResultDto> AddPersonAsync(AddPersonDto dto);
+        Task<AddPersonResultDto> AddPersonAsync(AddPersonDto dto, int userId);
 
         Task<DeletePersonResultDto> DeletePersonAsync(int id);
 
