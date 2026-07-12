@@ -44,8 +44,8 @@ namespace Server.Controller.Schuldenbuch
 
             return result.Status switch
             {
-                DeleteStatus.Success => Ok(result.Message),
-                DeleteStatus.NotFound => NotFound(result.Message),
+                DeleteStatus.Success => Ok(result),
+                DeleteStatus.NotFound => NotFound(result),
                 _ => StatusCode(500, "Unexpected error occurred.")
             };
         }
