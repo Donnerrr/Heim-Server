@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schuldenbuch.Core.DTOs.PersonDtos;
 using Schuldenbuch.Core.Extensions;
@@ -29,8 +29,8 @@ namespace Server.Controller.Schuldenbuch
 
             return result.Status switch
             {
-                AddPersonStatus.Success => Ok(new { Message = result.Message }),
-                AddPersonStatus.ValidationError => BadRequest(result.Message),
+                AddPersonStatus.Success => Ok(new { result }),
+                AddPersonStatus.ValidationError => BadRequest(result),
                 _ => StatusCode(500, "Unexpected error occurred.")
             };
         }
