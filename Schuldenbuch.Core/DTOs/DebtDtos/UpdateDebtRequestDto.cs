@@ -1,3 +1,6 @@
+using System;
 
-
-public record UpdateDebtRequest(string Amount);
+namespace Schuldenbuch.Core.DTOs.DebtDtos
+{
+    public record UpdateDebtRequest(string Amount);
+}
