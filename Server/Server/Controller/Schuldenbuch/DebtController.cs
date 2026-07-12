@@ -35,7 +35,7 @@ namespace Server.Controller.Schuldenbuch
                 var result = await _debtService.AddDebtAsync(dto);
 
                 
-                return Ok(result.Message);
+                return Ok(result);
             }
             catch (Exception ex)
 {
