@@ -63,7 +63,7 @@ namespace Server.Controller.Schuldenbuch
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDebt(int id, [FromBody] UpdateDebtRequest request)
+        public async Task<IActionResult> UpdateDebt(int id, [FromBody] UpdateDebtRequestDto request)
         {
             var result = await _debtService.UpdateDebtAsync(id, request.Amount);
             switch (result.Status)
