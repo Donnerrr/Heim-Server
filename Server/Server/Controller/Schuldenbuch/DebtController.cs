@@ -54,9 +54,9 @@ namespace Server.Controller.Schuldenbuch
             switch (result.Status)
             {
                 case DeleteStatus.Success:
-                    return Ok(result.Message);
+                    return Ok(result);
                 case DeleteStatus.NotFound:
-                    return NotFound(result.Message);
+                    return NotFound(result);
                 default:
                     return StatusCode(500, "Unexpected error occurred.");
             }
@@ -69,11 +69,11 @@ namespace Server.Controller.Schuldenbuch
             switch (result.Status)
             {
                 case UpdateStatus.Success:
-                    return Ok(result.Message);
+                    return Ok(result);
                 case UpdateStatus.Failed:
-                    return BadRequest(result.Message);
+                    return BadRequest(result);
                 case UpdateStatus.ValidationError:
-                    return BadRequest(result.Message);
+                    return BadRequest(result);
                 default:
                     return StatusCode(500, "Unexpected error occurred.");
             }
